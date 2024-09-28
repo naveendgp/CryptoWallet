@@ -8,7 +8,6 @@ const DashBoard = () => {
 
     const {
       currentAccount,
-      connectWallet,
       handleChange,
       sendTransaction,
       formData,

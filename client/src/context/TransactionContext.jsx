@@ -15,11 +15,68 @@ const createEthereumContract = () => {
   return transactionsContract;
 };
 
+const switchNetwork = async () => {
+  try {
+    if (!window.ethereum) throw new Error("MetaMask is not installed");
+
+    // Binance Smart Chain Mainnet Configuration
+    const bscMainnet = {
+      chainId: "0x38", // 56 in decimal
+      chainName: "Binance Smart Chain Mainnet",
+      nativeCurrency: {
+        name: "Binance Coin",
+        symbol: "BNB",
+        decimals: 18,
+      },
+      rpcUrls: ["https://bsc-dataseed.binance.org/"],
+      blockExplorerUrls: ["https://bscscan.com/"],
+    };
+
+    // Check if MetaMask is already connected to Binance Smart Chain Mainnet
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: bscMainnet.chainId }],
+    });
+
+    console.log("Switched to Binance Smart Chain");
+  } catch (error) {
+    // If the network is not added to MetaMask, add it
+    if (error.code === 4902) {
+      try {
+        const bscMainnet = {
+          chainId: "0x38", // 56 in decimal
+          chainName: "Binance Smart Chain Mainnet",
+          nativeCurrency: {
+            name: "Binance Coin",
+            symbol: "BNB",
+            decimals: 18,
+          },
+          rpcUrls: ["https://bsc-dataseed.binance.org/"],
+          blockExplorerUrls: ["https://bscscan.com/"],
+        };
+
+        // Add Binance Smart Chain Mainnet to MetaMask
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [bscMainnet],
+        });
+
+        console.log("Binance Smart Chain added and switched");
+      } catch (addError) {
+        console.error("Failed to add Binance Smart Chain", addError);
+      }
+    } else {
+      console.error("Failed to switch network", error);
+    }
+  }
+};
+
+
 export const TransactionsProvider = ({ children }) => {
   const [formData, setformData] = useState({
     addressTo: "0xadEF408Dc790043863B92a109a2140Bb350C8284",
     amount: "2500",
-    message: "Convenience Charge",
+    message: "Convinence Charge",
   });
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -95,6 +152,8 @@ export const TransactionsProvider = ({ children }) => {
     try {
       if (!ethereum) return alert("Please install MetaMask.");
 
+      switchNetwork()
+
       const accounts = await ethereum.request({ method: "eth_requestAccounts", });
       setCurrentAccount(accounts[0]);
       window.location.reload();
@@ -108,7 +167,7 @@ export const TransactionsProvider = ({ children }) => {
   const sendTransaction = async () => {
     try {
       if (ethereum) {
-        const { addressTo, amount,  message } = formData;
+        const { addressTo, amount, keyword, message } = formData;
         const transactionsContract = createEthereumContract();
         const parsedAmount = ethers.utils.parseEther(amount);
 
