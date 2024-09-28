@@ -15,7 +15,7 @@ const RandomIdGenerator = () => {
   const [randomId, setRandomId] = useState('');
 
   const handleGenerate = () => {
-    setRandomId(generateRandomId(16));
+    setRandomId(generateRandomId(10));
   };
 
   return (

@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom"; // Import useNavigate for naviga
 
 const generateRandomId = (length) => {
   const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&_';
-  let result = '';
+    "ABCDEFGHIJabcdefghij0123456789";
+  let result = "";
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     result += characters[randomIndex];
@@ -21,7 +21,7 @@ const MetaMask = () => {
   const [userBalance, setUserBalance] = useState(null);
   const navigate = useNavigate(); // Initialize useNavigate
 
-  const [randomId, setRandomId] = useState('');
+  const [randomId, setRandomId] = useState("");
 
   useEffect(() => {
     if (randomId) {
@@ -32,21 +32,24 @@ const MetaMask = () => {
   const handleGenerate = async () => {
     let isUnique = false;
     let newId;
-  
+
     while (!isUnique) {
-      newId = generateRandomId(16);
-  
+      newId = generateRandomId(10);
+
       try {
-        const response = await fetch("http://localhost:5000/api/check-random-id", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ randomId: newId }),
-        });
-  
+        const response = await fetch(
+          "http://localhost:5000/api/check-random-id",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ randomId: newId }),
+          }
+        );
+
         const data = await response.json();
-  
+
         if (!data.exists) {
           isUnique = true;
           setRandomId(newId);
@@ -54,11 +57,10 @@ const MetaMask = () => {
         }
       } catch (error) {
         console.error("Error checking random ID:", error);
-        break; 
+        break;
       }
     }
   };
-  
 
   const sendRandomIdToBackend = async (id) => {
     try {
@@ -69,7 +71,7 @@ const MetaMask = () => {
         },
         body: JSON.stringify({ randomId: id }),
       });
-  
+
       const data = await response.json();
       if (data.success) {
         console.log("Random ID saved successfully");
@@ -80,7 +82,6 @@ const MetaMask = () => {
       console.error("Error sending random ID to backend:", error);
     }
   };
-  
 
   const InsBalance = () => {
     toast("Insufficient Balance you need 5000 wei to proceed!");
@@ -116,13 +117,11 @@ const MetaMask = () => {
       setUserBalance(balanceInEth);
 
       // Check if the balance is sufficient
-      if (Number(balance) >= ethers.utils.parseEther("5000")) {
-        navigate("/register");    
       if (Number(balance) <= ethers.utils.parseEther("5000")) {
         handleGenerate();
-        navigate("/register");  
+        navigate("/register");
       } else {
-        alert("Insufficient balance. You need at least 5000 wei to proceed."); 
+        alert("Insufficient balance. You need at least 5000 wei to proceed.");
         InsBalance();
       }
     } catch (error) {
