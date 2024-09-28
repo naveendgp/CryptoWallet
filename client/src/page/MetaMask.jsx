@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom";
 
 const generateRandomId = (length) => {
-  const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&_';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&_';
   let result = '';
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
@@ -17,17 +16,17 @@ const generateRandomId = (length) => {
 
 const MetaMask = () => {
   const [errorMessage, setErrorMessage] = useState(null);
-  const [defaultAccount, setDefaultAccount] = useState(null);
+  const [defaultAccount, setDefaultAccount] = useState(null);  // Account state
   const [userBalance, setUserBalance] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
-
   const [randomId, setRandomId] = useState('');
+  const navigate = useNavigate();
 
+  // Effect to trigger handleGenerate when defaultAccount is set
   useEffect(() => {
-    if (randomId) {
-      console.log("RandomId:", randomId);
+    if (defaultAccount) {
+      handleGenerate(); // Call handleGenerate when defaultAccount is updated
     }
-  }, [randomId]);
+  }, [defaultAccount]);  // Dependency on defaultAccount, runs when it changes
 
   const handleGenerate = async () => {
     let isUnique = false;
@@ -42,7 +41,7 @@ const MetaMask = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ randomId: newId }),
+          body: JSON.stringify({ randomId: newId, Account: defaultAccount }),  // Send account too
         });
   
         const data = await response.json();
@@ -50,7 +49,9 @@ const MetaMask = () => {
         if (!data.exists) {
           isUnique = true;
           setRandomId(newId);
-          sendRandomIdToBackend(newId);
+          sendRandomIdToBackend(newId);  // Send to backend once unique ID is generated
+        } else {
+          console.log(data.message);  // Handle case where ID or account already exists
         }
       } catch (error) {
         console.error("Error checking random ID:", error);
@@ -58,7 +59,6 @@ const MetaMask = () => {
       }
     }
   };
-  
 
   const sendRandomIdToBackend = async (id) => {
     try {
@@ -67,7 +67,7 @@ const MetaMask = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ randomId: id }),
+        body: JSON.stringify({ randomId: id, Account: defaultAccount }),  // Send account
       });
   
       const data = await response.json();
@@ -79,11 +79,6 @@ const MetaMask = () => {
     } catch (error) {
       console.error("Error sending random ID to backend:", error);
     }
-  };
-  
-
-  const InsBalance = () => {
-    toast("Insufficient Balance you need 5000 wei to proceed!");
   };
 
   const connectWallet = () => {
@@ -102,8 +97,8 @@ const MetaMask = () => {
   };
 
   const accountChanged = (accountName) => {
-    setDefaultAccount(accountName);
-    getUserBalance(accountName);
+    setDefaultAccount(accountName); // Set the default account
+    getUserBalance(accountName);    // Get balance after setting the account
   };
 
   const getUserBalance = async (accountAddress) => {
@@ -115,13 +110,12 @@ const MetaMask = () => {
       const balanceInEth = ethers.utils.formatEther(balance);
       setUserBalance(balanceInEth);
 
-      // Check if the balance is sufficient
+      // Check if balance is sufficient
       if (Number(balance) <= ethers.utils.parseEther("5000")) {
-        handleGenerate();
-        navigate("/register");  
+        navigate("/register");  // Navigate if the balance is sufficient
       } else {
         alert("Insufficient balance. You need at least 5000 wei to proceed."); 
-        InsBalance();
+        toast("Insufficient Balance! You need 5000 wei to proceed.");
       }
     } catch (error) {
       setErrorMessage("Failed to fetch balance. Please try again.");
