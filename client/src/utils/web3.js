@@ -12,8 +12,7 @@ async function main() {
     const wallet = new ethers.Wallet("0x4bbbf85ce3377467afe5d46f804f221813b2bb87f24d81f60f1fcdbf7cbf4356", provider); // replace with your wallet private key
     const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 
-    // Example: Register a user with a referrer
-    const referrerAddress = "0xReferrerAddressHere"; // Replace with a valid address
+    const referrerAddress = "f24d81f60f1fcdbf7cbf4356x";
     const registerTx = await contract.registerUser(referrerAddress);
     console.log("Register Transaction:", registerTx.hash);
     await registerTx.wait(); // Wait for the transaction to be mined

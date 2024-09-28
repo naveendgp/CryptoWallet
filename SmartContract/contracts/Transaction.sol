@@ -1,63 +1,84 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-contract ReferralDapp {
+interface IERC20 {
+    function transfer(address recipient, uint256 amount) external returns (bool);
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+    function balanceOf(address account) external view returns (uint256);
+}
 
+contract ReferralDapp {
     struct User {
         address referrer;
-        uint256 balance;
+        string referralID;
     }
 
     mapping(address => User) public users;
-    mapping(address => bool) public registeredUsers;
+    mapping(string => address) public referralIDToAddress;
 
-    uint256 constant MIN_BALANCE = 5000; // Set the minimum balance required in wei (or token units)
-    uint256 constant COMMISSION_RATE = 20; // 20% commission
+    uint256 public registrationFee = 2500 * 10**18;  // Assuming token has 18 decimals
+    uint256 public referrerBonus = 500 * 10**18;
+    uint256 public companyShare = 2000 * 10**18;
 
-    // Modifier to check the user's wallet balance
-    modifier hasSufficientBalance() {
-        require(msg.sender.balance >= MIN_BALANCE, "Insufficient balance to register.");
-        _;
+    address public companyWallet;
+    address public tokenAddress;
+    uint256 public referralCounter = 1;
+
+    event Registration(address user, string referralID, address referrer);
+
+    IERC20 public token;
+
+    constructor(address _companyWallet, address _tokenAddress) {
+        companyWallet = _companyWallet;
+        tokenAddress = _tokenAddress;
+        token = IERC20(tokenAddress);
     }
 
-    // Register new user using referral ID
-    function registerUser(address _referrer) public hasSufficientBalance {
-        require(!registeredUsers[msg.sender], "User already registered");
-        require(_referrer != address(0), "Invalid referrer");
-
-        // Register the new user
-        users[msg.sender] = User({
-            referrer: _referrer,
-            balance: 0
-        });
-
-        registeredUsers[msg.sender] = true;
+    function generateReferralID() internal returns (string memory) {
+        referralCounter++;
+        return string(abi.encodePacked("REF", uint2str(referralCounter)));
     }
 
-    // Function to log in and transfer commission to referrer
-    function login() public {
-        require(registeredUsers[msg.sender], "User not registered");
-
-        address referrer = users[msg.sender].referrer;
-        uint256 userBalance = msg.sender.balance;
-
-        require(userBalance >= MIN_BALANCE, "Insufficient balance for login.");
-
-        // Calculate commission
-        uint256 commission = (userBalance * COMMISSION_RATE) / 100;
-
-        // Transfer commission to referrer
-        payable(referrer).transfer(commission);
-
-        // Update user balance
-        users[referrer].balance += commission;
+    function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len;
+        while (_i != 0) {
+            k = k - 1;
+            uint8 temp = (48 + uint8(_i - _i / 10 * 10));
+            bytes1 b1 = bytes1(temp);
+            bstr[k] = b1;
+            _i /= 10;
+        }
+        return string(bstr);
     }
 
-    // Fallback function to receive Ether
-    receive() external payable {}
+    function register(string memory _referralID) public {
+        require(users[msg.sender].referrer == address(0), "User already registered");
+        require(token.balanceOf(msg.sender) >= registrationFee, "Insufficient token balance");
 
-    // Get the balance of the user
-    function getBalance(address _user) public view returns (uint256) {
-        return users[_user].balance;
+        address referrer = referralIDToAddress[_referralID];
+        require(referrer != address(0), "Invalid referral ID");
+
+        require(token.transferFrom(msg.sender, companyWallet, companyShare), "Company transfer failed");
+        require(token.transferFrom(msg.sender, referrer, referrerBonus), "Referrer transfer failed");
+
+        string memory newReferralID = generateReferralID();
+        users[msg.sender] = User(referrer, newReferralID);
+        referralIDToAddress[newReferralID] = msg.sender;
+
+        emit Registration(msg.sender, newReferralID, referrer);
+    }
+
+    function getReferralID(address user) public view returns (string memory) {
+        return users[user].referralID;
     }
 }

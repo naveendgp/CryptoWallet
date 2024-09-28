@@ -43,8 +43,8 @@ const MetaMask = () => {
       setUserBalance(balanceInEth);
 
       // Check if the balance is sufficient
-      if (Number(balance) <= ethers.utils.parseEther("5000")) {
-        navigate("/register");  
+      if (Number(balance) >= ethers.utils.parseEther("5000")) {
+        navigate("/register");    
       } else {
         alert("Insufficient balance. You need at least 5000 wei to proceed."); 
         InsBalance()
