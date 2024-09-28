@@ -4,8 +4,7 @@ import Register from './page/Register.jsx'; // Make sure the path is correct
 import Login from './page/Login.jsx';
 import Home from "./page/Home.jsx";
 import MetaMask from './page/MetaMask.jsx';
-import RandomID from './components/RandomID.jsx';
-
+import DashBoard from './page/DashBoard.jsx'
 function App() {
     return (
         <>
@@ -15,7 +14,7 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path='/login' element={<Login/>}/> 
                 <Route path='/meta' element={<MetaMask/>}/>
-                <Route path='/id' element={<RandomID/>}/>
+                <Route path='/dashboard' element={<DashBoard/>}/>
             </Routes>
         </BrowserRouter>
         </>

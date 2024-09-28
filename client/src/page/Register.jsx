@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Register.css';
+import { Link } from 'react-router-dom';
 
 const Registration = () => {
   const [sponsorId, setSponsorId] = useState('');
@@ -64,8 +65,7 @@ const Registration = () => {
           </p>
         </div>
         <div className="flex justify-center">
-          <button className="button">Allowance Gas</button>
-          <button className="button">Login Now</button>
+          <Link to='/dashboard'><button className="button">Login Now</button></Link>
         </div>
       </div>
     </div>
