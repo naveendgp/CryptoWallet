@@ -1,8 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+
+const generateRandomId = (length) => {
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$&_';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
+};
 
 const MetaMask = () => {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -10,9 +21,71 @@ const MetaMask = () => {
   const [userBalance, setUserBalance] = useState(null);
   const navigate = useNavigate(); // Initialize useNavigate
 
+  const [randomId, setRandomId] = useState('');
+
+  useEffect(() => {
+    if (randomId) {
+      console.log("RandomId:", randomId);
+    }
+  }, [randomId]);
+
+  const handleGenerate = async () => {
+    let isUnique = false;
+    let newId;
+  
+    while (!isUnique) {
+      newId = generateRandomId(16);
+  
+      try {
+        const response = await fetch("http://localhost:5000/api/check-random-id", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ randomId: newId }),
+        });
+  
+        const data = await response.json();
+  
+        if (!data.exists) {
+          isUnique = true;
+          setRandomId(newId);
+          sendRandomIdToBackend(newId);
+        }
+      } catch (error) {
+        console.error("Error checking random ID:", error);
+        break; 
+      }
+    }
+  };
+  
+
+  const sendRandomIdToBackend = async (id) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/save-random-id", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ randomId: id }),
+      });
+  
+      const data = await response.json();
+      if (data.success) {
+        console.log("Random ID saved successfully");
+      } else {
+        console.error("Error saving random ID:", data.message);
+      }
+    } catch (error) {
+      console.error("Error sending random ID to backend:", error);
+    }
+  };
+  
+
   const InsBalance = () => {
-    toast("Inusfficient Balance you need 5000 wei to proceed!")
-  }
+    toast("Insufficient Balance you need 5000 wei to proceed!");
+  };
+
   const connectWallet = () => {
     if (window.ethereum) {
       window.ethereum
@@ -45,20 +118,21 @@ const MetaMask = () => {
       // Check if the balance is sufficient
       if (Number(balance) >= ethers.utils.parseEther("5000")) {
         navigate("/register");    
+      if (Number(balance) <= ethers.utils.parseEther("5000")) {
+        handleGenerate();
+        navigate("/register");  
       } else {
         alert("Insufficient balance. You need at least 5000 wei to proceed."); 
-        InsBalance()
+        InsBalance();
       }
     } catch (error) {
       setErrorMessage("Failed to fetch balance. Please try again.");
-
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="bg-white shadow-lg rounded-lg p-10 w-11/12 md:w-3/4 lg:w-1/2">
-       
         <center>
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-6">
             MetaMask Wallet Connection
