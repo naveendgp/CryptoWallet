@@ -128,14 +128,14 @@ const MetaMask = () => {
       <div className="bg-white shadow-lg rounded-lg p-10 w-11/12 md:w-3/4 lg:w-1/2">
         <center>
           <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-6">
-            MetaMask Wallet Connection
+            MetaMask Wallet Verification
           </h1>
 
           <button
             onClick={connectWallet}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
           >
-            Connect Wallet Button
+            Verify Account
           </button>
 
           <h3 className="text-lg font-medium text-gray-700 mt-4">
