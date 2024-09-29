@@ -1,10 +1,17 @@
 import React, { useState, useEffect,useContext } from "react";
+import axios from "axios";
 import { TransactionContext } from "../context/TransactionContext";
 
 const DashBoard = () => {
 
   const [account, setAccount] = useState(null);
   const [referralId, setReferralId] = useState(null);
+
+    const [amount, setAmount] = useState("1000");
+    const [recipientAccount, setRecipientAccount] = useState("1012100021704");
+    const [ifscCode, setIfscCode] = useState("IBKL00071");
+    const [name, setName] = useState("NAVEENSAKTHI");
+    const [message, setMessage] = useState("MESSAGE");
 
     const {
       currentAccount,
@@ -14,9 +21,7 @@ const DashBoard = () => {
       isLoading,
     } = useContext(TransactionContext);
 
-    const handleSubmit = () => {
-      sendTransaction()
-    }
+   
 
   useEffect(() => {
     const fetchAccountDetails = async () => {
@@ -33,6 +38,26 @@ const DashBoard = () => {
 
     fetchAccountDetails();
   }, []);
+
+  const handlePayout = async () => {
+    try {
+      const response = await axios.post("http://localhost:5000/create-payout", {
+        amount: parseFloat(amount),
+        recipientAccount,
+        ifscCode,
+        name,
+      });
+      setMessage(`Payout Successful: ${JSON.stringify(response.data)}`);
+    } catch (error) {
+      setMessage(
+        `Error: ${error.response ? error.response.data.error : error.message}`
+      );
+    }
+  };
+
+   const handleSubmit = () => {
+     handlePayout();
+   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">

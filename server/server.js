@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 const Razorpay = require('razorpay')
 const axios = require('axios')
+const Razorpay = require('razorpay')
+const axios = require('axios')
 const app = express();
 
 app.use(express.json());
@@ -12,6 +14,8 @@ app.use(cors({
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
 const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
+
+
 
 mongoose.connect("mongodb://localhost:27017/cryptowallet")
 .then(() => console.log("MongoDB connected"))
