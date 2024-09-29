@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require('cors');
+const Razorpay = require('razorpay')
 const app = express();
 
 app.use(express.json());
@@ -69,5 +70,80 @@ app.get("/api/account", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+const razorpay = new Razorpay({
+  key_id: 'rzp_test_PtZCw9A7XrHNYl',
+  key_secret: 'JO4MJE8ox8vAG1DuJkpXyFbF'
+});
+
+
+// Customer's bank details
+app.post('/create-customer', async (req, res) => {
+  const { name, email, contact } = req.body; // Extract customer details from request body
+
+  try {
+    const customerContact = await razorpay.contacts.create({
+      name: name, // Customer's name
+      email: email, // Customer's email
+      contact: contact, // Customer's phone number
+      type: 'customer'
+    });
+
+    res.json({ success: true, contact: customerContact });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error creating customer contact', error });
+  }
+});
+
+app.get('/api/test',(req,res) => {
+    try{
+      res.send('hello')
+    }catch(error){
+      res.send(error)
+    }
+})
+
+// API Route to create a fund account for the customer
+app.post('/create-fund-account', async (req, res) => {
+  const { contact_id, bank_name, ifsc, account_number } = req.body; // Extract bank details from request body
+
+  try {
+    const fundAccount = await razorpay.fundAccount.create({
+      contact_id: contact_id, // Contact ID of the customer
+      account_type: 'bank_account',
+      bank_account: {
+        name: bank_name, // Bank account holder's name
+        ifsc: ifsc, // IFSC code of the customer's bank
+        account_number: account_number // Bank account number of the customer
+      }
+    });
+
+    res.json({ success: true, fundAccount });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error creating fund account', error });
+  }
+});
+
+// API Route to initiate a payout using the created fund account
+app.post('/initiate-payout', async (req, res) => {
+  const { fund_account_id, amount } = req.body; // Extract payout details from request body
+
+  try {
+    const payout = await razorpay.payouts.create({
+      account_number: '23232300012345', // Your merchant account number
+      fund_account_id: fund_account_id, // Fund Account ID of the customer
+      amount: amount, // Payout amount in paisa (100 paisa = ₹1)
+      currency: 'INR',
+      mode: 'IMPS', // Transfer mode (IMPS, NEFT, UPI, etc.)
+      purpose: 'payout',
+      queue_if_low_balance: true // Queue payout if insufficient balance
+    });
+
+    res.json({ success: true, payout });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error initiating payout', error });
+  }
+});
+
 
 app.listen(5000, () => console.log("Server running on port 5000"));

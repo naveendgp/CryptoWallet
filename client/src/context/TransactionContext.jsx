@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { useNavigate } from "react-router-dom";
+import { createContact,makePayout } from "../utils/RazorPay";
+import axios from 'axios'
 import { contractABI, contractAddress } from "../utils/constants";
 
 export const TransactionContext = React.createContext();
@@ -73,10 +74,10 @@ const switchNetwork = async () => {
 
 
 export const TransactionsProvider = ({ children }) => {
-  const [formData, setformData] = useState({
-    addressTo: "0xadEF408Dc790043863B92a109a2140Bb350C8284",
-    amount: "2500",
-    message: "Convinence Charge",
+  const [formData, setFormData] = useState({
+    addressTo1: "0xadEF408Dc790043863B92a109a2140Bb350C8284",
+    amount1: "2500",
+    message: "Convenience Charge",
   });
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -86,7 +87,7 @@ export const TransactionsProvider = ({ children }) => {
 
 
   const handleChange = (e, name) => {
-    setformData((prevState) => ({ ...prevState, [name]: e.target.value }));
+    setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
   const getAllTransactions = async () => {
@@ -101,7 +102,6 @@ export const TransactionsProvider = ({ children }) => {
           addressFrom: transaction.sender,
           timestamp: new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
           message: transaction.message,
-          keyword: transaction.keyword,
           amount: parseInt(transaction.amount._hex) / (10 ** 18)
         }));
 
@@ -164,44 +164,136 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
-  const sendTransaction = async () => {
+  // const sendTransaction = async () => {
+  //   try {
+  //     if (ethereum) {
+  //       const { addressTo, amount, keyword, message } = formData;
+  //       const transactionsContract = createEthereumContract();
+  //       const parsedAmount = ethers.utils.parseEther(amount);
+
+  //       await ethereum.request({
+  //         method: "eth_sendTransaction",
+  //         params: [{
+  //           from: currentAccount,
+  //           to: addressTo,
+  //           gas: "0x5208",
+  //           value: parsedAmount._hex,
+  //         }],
+  //       });
+
+  //       const transactionHash = await transactionsContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
+
+  //       setIsLoading(true);
+  //       console.log(`Loading - ${transactionHash.hash}`);
+  //       await transactionHash.wait();
+  //       console.log(`Success - ${transactionHash.hash}`);
+  //       setIsLoading(false);
+
+  //       const transactionsCount = await transactionsContract.getTransactionCount();
+
+  //       setTransactionCount(transactionsCount.toNumber());
+  //       window.location.reload();
+  //     } else {
+  //       console.log("No ethereum object");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+
+  //     throw new Error("No ethereum object");
+  //   }
+  // };
+
+  const handlePayout = async () => {
     try {
-      if (ethereum) {
-        const { addressTo, amount, keyword, message } = formData;
-        const transactionsContract = createEthereumContract();
-        const parsedAmount = ethers.utils.parseEther(amount);
-
-        await ethereum.request({
-          method: "eth_sendTransaction",
-          params: [{
-            from: currentAccount,
-            to: addressTo,
-            gas: "0x5208",
-            value: parsedAmount._hex,
-          }],
-        });
-
-        const transactionHash = await transactionsContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
-
-        setIsLoading(true);
-        console.log(`Loading - ${transactionHash.hash}`);
-        await transactionHash.wait();
-        console.log(`Success - ${transactionHash.hash}`);
-        setIsLoading(false);
-
-        const transactionsCount = await transactionsContract.getTransactionCount();
-
-        setTransactionCount(transactionsCount.toNumber());
-        window.location.reload();
-      } else {
-        console.log("No ethereum object");
-      }
+      const response = await axios.post("/create-payout", {
+        amount: amount * 100, // Convert to paise
+        recipientAccount: recipientAccount,
+      });
+      console.log("Payout Success:", response.data);
     } catch (error) {
-      console.log(error);
-
-      throw new Error("No ethereum object");
+      console.error("Error creating payout:", error);
     }
   };
+
+  const sendTransaction = async () => {
+    try{
+      const referrerDetails = {
+          name: "Referrer Name",
+          contactNumber: "Referrer Contact Number",
+          email: "Referrer Email",
+          accountNumber: "Referrer Account Number",
+          ifsc: "Referrer IFSC Code",
+        };
+        
+        const contactId = await createContact(referrerDetails);
+        await makePayout(contactId, referrerDetails, 1000);
+
+
+        console.log("Tokens sent and ₹1000 payout made to the referrer.");
+
+    }catch(error){
+      console.log("error occured")
+    }
+  }
+
+  // const sendTransaction = async () => {
+  //   try {
+  //     if (ethereum) {
+  //       const { addressTo1, amount1, message } =
+  //         formData; // Updated to include different amounts
+  //       const transactionsContract = createEthereumContract();
+  //       const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
+
+  //       // Send to the first address
+  //       await ethereum.request({
+  //         method: "eth_sendTransaction",
+  //         params: [
+  //           {
+  //             from: currentAccount,
+  //             to: addressTo1, // First recipient
+  //             gas: "0x5208",
+  //             value: parsedAmount1._hex,
+  //           },
+  //         ],
+  //       });
+
+  //       const transactionHash1 = await transactionsContract.addToBlockchain(
+  //         addressTo1,
+  //         parsedAmount1,
+  //         message,
+  //       );
+  //       console.log(`Loading - ${transactionHash1.hash}`);
+  //       await transactionHash1.wait();
+  //       console.log(`Success - ${transactionHash1.hash}`);
+
+  //       //RazorPay
+  //       const referrerDetails = {
+  //         name: "Referrer Name",
+  //         contactNumber: "Referrer Contact Number",
+  //         email: "Referrer Email",
+  //         accountNumber: "Referrer Account Number",
+  //         ifsc: "Referrer IFSC Code",
+  //       };
+        
+  //       const contactId = await createContact(referrerDetails);
+  //       await makePayout(contactId, referrerDetails, 1000);
+
+
+  //       console.log("Tokens sent and ₹1000 payout made to the referrer.");
+
+  //       const transactionsCount =
+  //         await transactionsContract.getTransactionCount();
+  //       setTransactionCount(transactionsCount.toNumber());
+  //       window.location.reload();
+  //     } else {
+  //       console.log("No ethereum object");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new Error("Transaction failed");
+  //   }
+  // };
+
 
   useEffect(() => {
     checkIfWalletIsConnect();
