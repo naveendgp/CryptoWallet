@@ -5,6 +5,7 @@ import Login from './page/Login.jsx';
 import Home from "./page/Home.jsx";
 import MetaMask from './page/MetaMask.jsx';
 import DashBoard from './page/DashBoard.jsx'
+import UserDetails from './page/UserDetails.jsx';
 function App() {
     return (
         <>
@@ -15,6 +16,7 @@ function App() {
                 <Route path='/login' element={<Login/>}/> 
                 <Route path='/meta' element={<MetaMask/>}/>
                 <Route path='/dashboard' element={<DashBoard/>}/>
+                <Route path='/userDetails' element={<UserDetails/>}/>
             </Routes>
         </BrowserRouter>
         </>

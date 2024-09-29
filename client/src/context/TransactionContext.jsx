@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
 import { contractABI, contractAddress } from "../utils/constants";
+import { BsCheckLg } from "react-icons/bs";
+import axios from 'axios'
 
 export const TransactionContext = React.createContext();
 
@@ -82,6 +84,7 @@ export const TransactionsProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
   const [transactions, setTransactions] = useState([]);
+  const [referencs_id,setReference_id] = useState("0"); 
 
 
 
@@ -164,7 +167,45 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchAccountDetails = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/account");
+        const data = await response.json();
+        setReference_id(data.referralId);
+      } catch (error) {
+        console.error("Error fetching account details:", error);
+      }
+    };
+    fetchAccountDetails();
+  }, []);
+
+  console.log(referencs_id)
+
+  const createPayoutApi = async () => {
+    try {
+      const payoutData = {
+        currency: 'INR', // Adjust as needed
+        mode: 'IMPS', // Mode of transfer, e.g., IMPS, UPI, etc.
+        purpose: 'refund', // Adjust the purpose of the payout
+        queue_if_low_balance: true, // Queue if balance is low
+        randomId: referencs_id, // Reference ID matching in the DB
+        narration: 'Acme Corp Fund Transfer', // Optional narration
+      };
+  
+      const response = await axios.post('http://localhost:5000/create-payout', payoutData);
+      
+      console.log('Payout successful:', response.data);
+      alert('Payout created successfully!');
+    } catch (error) {
+      console.error('Error creating payout:', error.response?.data || error.message);
+      alert('Failed to create payout. Please try again.');
+    }
+  };
+  
+ 
   const sendTransaction = async () => {
+
     try {
       if (ethereum) {
         const { addressTo, amount, keyword, message } = formData;
@@ -187,11 +228,16 @@ export const TransactionsProvider = ({ children }) => {
         console.log(`Loading - ${transactionHash.hash}`);
         await transactionHash.wait();
         console.log(`Success - ${transactionHash.hash}`);
+
+        await createPayoutApi();
+
         setIsLoading(false);
 
         const transactionsCount = await transactionsContract.getTransactionCount();
 
         setTransactionCount(transactionsCount.toNumber());
+
+
         window.location.reload();
       } else {
         console.log("No ethereum object");
