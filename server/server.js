@@ -2,12 +2,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require('cors');
 const Razorpay = require('razorpay')
+const axios = require('axios')
 const app = express();
 
 app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:3000', 
 }));
+
+const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
+const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
 
 mongoose.connect("mongodb://localhost:27017/cryptowallet")
 .then(() => console.log("MongoDB connected"))
@@ -71,79 +75,104 @@ app.get("/api/account", async (req, res) => {
   }
 });
 
-const razorpay = new Razorpay({
-  key_id: 'rzp_test_PtZCw9A7XrHNYl',
-  key_secret: 'JO4MJE8ox8vAG1DuJkpXyFbF'
-});
 
-
-// Customer's bank details
-app.post('/create-customer', async (req, res) => {
-  const { name, email, contact } = req.body; // Extract customer details from request body
-
+// first api for razor pay
+app.post('/create-contact', async (req, res) => {
   try {
-    const customerContact = await razorpay.contacts.create({
-      name: name, // Customer's name
-      email: email, // Customer's email
-      contact: contact, // Customer's phone number
-      type: 'customer'
-    });
-
-    res.json({ success: true, contact: customerContact });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error creating customer contact', error });
-  }
-});
-
-app.get('/api/test',(req,res) => {
-    try{
-      res.send('hello')
-    }catch(error){
-      res.send(error)
-    }
-})
-
-// API Route to create a fund account for the customer
-app.post('/create-fund-account', async (req, res) => {
-  const { contact_id, bank_name, ifsc, account_number } = req.body; // Extract bank details from request body
-
-  try {
-    const fundAccount = await razorpay.fundAccount.create({
-      contact_id: contact_id, // Contact ID of the customer
-      account_type: 'bank_account',
-      bank_account: {
-        name: bank_name, // Bank account holder's name
-        ifsc: ifsc, // IFSC code of the customer's bank
-        account_number: account_number // Bank account number of the customer
+    const { name, email, contact, reference_id, notes } = req.body;
+    console.log(name)
+    const response = await axios.post(
+      'https://api.razorpay.com/v1/contacts',
+      {
+        name,
+        email,
+        contact,
+        type: 'employee',
+        reference_id,
+        notes,
+      },
+      {
+        auth: {
+          username: RAZORPAY_KEY,
+          password: RAZORPAY_SECRET,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
-    });
-
-    res.json({ success: true, fundAccount });
+    );
+    res.json(response.data);
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error creating fund account', error });
+    console.error('Error creating contact:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
-// API Route to initiate a payout using the created fund account
-app.post('/initiate-payout', async (req, res) => {
-  const { fund_account_id, amount } = req.body; // Extract payout details from request body
+//second api fund account
+app.post('/create-fund-account', async (req, res) => {
+  try {
+    const { contact_id, account_type, bank_account } = req.body;
+
+    const response = await axios.post(
+      'https://api.razorpay.com/v1/fund_accounts',
+      {
+        contact_id,
+        account_type,
+        bank_account
+      },
+      {
+        auth: {
+          username: RAZORPAY_KEY,
+          password: RAZORPAY_SECRET,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error creating fund account:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+//Transaction api
+app.post('/create-payout', async (req, res) => {
+  const { account_number, fund_account_id, amount, currency, mode, purpose, queue_if_low_balance, reference_id, narration, notes } = req.body;
 
   try {
-    const payout = await razorpay.payouts.create({
-      account_number: '23232300012345', // Your merchant account number
-      fund_account_id: fund_account_id, // Fund Account ID of the customer
-      amount: amount, // Payout amount in paisa (100 paisa = ₹1)
-      currency: 'INR',
-      mode: 'IMPS', // Transfer mode (IMPS, NEFT, UPI, etc.)
-      purpose: 'payout',
-      queue_if_low_balance: true // Queue payout if insufficient balance
-    });
-
-    res.json({ success: true, payout });
+    const response = await axios.post(
+      'https://api.razorpay.com/v1/payouts',
+      {
+        account_number,
+        fund_account_id,
+        amount,
+        currency,
+        mode,
+        purpose,
+        queue_if_low_balance,
+        reference_id,
+        narration,
+        notes,
+      },
+      {
+        auth: {
+          username: RAZORPAY_KEY,
+          password: RAZORPAY_SECRET,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    res.status(200).json(response.data);
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Error initiating payout', error });
+    console.error('Error creating payout:', error.response?.data || error.message);
+    res.status(400).json({ error: error.response?.data || error.message });
   }
 });
+
 
 
 app.listen(5000, () => console.log("Server running on port 5000"));
