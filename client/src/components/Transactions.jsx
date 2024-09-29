@@ -51,11 +51,11 @@ const Transactions = () => {
   const { transactions, currentAccount } = useContext(TransactionContext);
 
   return (
-    <div className="flex w-full justify-center items-center 2xl:px-20 gradient-bg-transactions">
+    <div id="aboutus" className="flex w-full justify-center items-center 2xl:px-20 gradient-bg-transactions text-base">
       <div className="flex flex-col md:p-12 py-12 px-4">
         {currentAccount ? (
           <h3 className="text-white text-3xl text-center my-2">
-            Latest Transactions
+            About ClimateCrew
           </h3>
         ) : (
           <h3 className="text-white text-3xl text-center my-2">
@@ -64,9 +64,26 @@ const Transactions = () => {
         )}
 
         <div className="flex flex-wrap justify-center items-center mt-10">
-          {[...dummyData, ...transactions].reverse().map((transaction, i) => (
-            <TransactionsCard key={i} {...transaction} />
-          ))}
+          {/* Left Section: Image */}
+          <div className="flex-1">
+            <img
+              src="https://demo.cocotemplates.com/cryptodax/wp-content/uploads/2022/10/Image-LPUF2X7-1024x828.png"
+              alt="ClimateCrew Mission and Vision"
+              className="w-full h-auto object-cover mr-5 rounded-lg"
+            />
+          </div>
+
+          {/* Right Section: Text */}
+          <div className="flex flex-col justify-center w-full lg:w-1/2 text-white mt-10 lg:mt-0">
+            <p className="text-lg text-center lg:text-left mb-4">
+              ClimateCrew was established by a dedicated team of
+              environmentally-conscious innovators, united by a common goal. Our
+              backgrounds span across various fields, including sustainable
+              technology and environmental solutions, and we have come together
+              to offer valuable insights, education, and tools for those
+              passionate about making a positive impact on the planet.
+            </p>
+          </div>
         </div>
       </div>
     </div>

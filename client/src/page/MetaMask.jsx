@@ -22,13 +22,7 @@ const MetaMask = () => {
   const [randomId, setRandomId] = useState('');
   const navigate = useNavigate();
 
-  // Effect to trigger handleGenerate when defaultAccount is set
-  useEffect(() => {
-    if (defaultAccount) {
-      handleGenerate(); // Call handleGenerate when defaultAccount is updated
-    }
-  }, [defaultAccount]);  // Dependency on defaultAccount, runs when it changes
-
+  
   const handleGenerate = async () => {
     let isUnique = false;
     let newId;
@@ -113,7 +107,8 @@ const MetaMask = () => {
 
       // Check if balance is sufficient
       if (Number(balance) <= ethers.utils.parseEther("5000")) {
-        navigate("/register");  // Navigate if the balance is sufficient
+        handleGenerate();
+        navigate("/register"); 
       } else {
         alert("Insufficient balance. You need at least 5000 wei to proceed."); 
         toast("Insufficient Balance! You need 5000 wei to proceed.");

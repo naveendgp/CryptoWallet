@@ -25,15 +25,7 @@ const Registration = () => {
         <div className="layer"></div>
         <div className="layer"></div>
       </div>
-      {/* Top-right connect wallet button */}
-      <div className="absolute top-5 right-5">
-        <button 
-          onClick={handleConnectWallet} 
-          className={`connect-wallet-button ${walletStatus ? 'connected' : ''}`}>
-          {walletStatus ? 'Wallet Connected' : 'Connect Wallet'}
-        </button>
-      </div>
-
+     
       <div className="w-full max-w-md p-8">
         <h1 className="text-3xl font-bold mb-4">Registration in The Rich Crowd</h1>
         <p className="mb-5">Enter ID or KSN wallet</p>
@@ -42,7 +34,7 @@ const Registration = () => {
           placeholder="Sponsor ID"
           value={sponsorId}
           onChange={handleInputChange}
-          className="input-field mb-7"
+          className="input-field mb-7 rounded-md"
         />
         <div className="error-text mb-7">
           <p>
