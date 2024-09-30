@@ -1,27 +1,19 @@
-import React, { useState, useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { TransactionContext } from "../context/TransactionContext";
 
 const DashBoard = () => {
-
   const [account, setAccount] = useState(null);
   const [referralId, setReferralId] = useState(null);
 
-    const [amount, setAmount] = useState("1000");
-    const [recipientAccount, setRecipientAccount] = useState("1012100021704");
-    const [ifscCode, setIfscCode] = useState("IBKL00071");
-    const [name, setName] = useState("NAVEENSAKTHI");
-    const [message, setMessage] = useState("MESSAGE");
+  const [amount, setAmount] = useState("1000");
+  const [recipientAccount, setRecipientAccount] = useState("123456789-");
+  const [ifscCode, setIfscCode] = useState("IBKL45678");
+  const [name, setName] = useState("CUSTOMERNAME");
+  const [message, setMessage] = useState("MESSAGE");
 
-    const {
-      currentAccount,
-      handleChange,
-      sendTransaction,
-      formData,
-      isLoading,
-    } = useContext(TransactionContext);
-
-   
+  const { currentAccount, handleChange, sendTransaction, formData, isLoading } =
+    useContext(TransactionContext);
 
   useEffect(() => {
     const fetchAccountDetails = async () => {
@@ -55,21 +47,33 @@ const DashBoard = () => {
     }
   };
 
-   const handleSubmit = () => {
-     handlePayout();
-   };
+  const handleSubmit = () => {
+    handlePayout();
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        {/* New Card: Message for generating referral ID */}
+        <div className="bg-red-500 text-white p-4 mb-6 rounded-lg shadow-lg">
+          <h3 className="text-lg font-bold">Action Required</h3>
+          <p className="text-sm">
+            Please send <strong>2500 tokens</strong> to generate your referral
+            ID.
+          </p>
+        </div>
+
+        {/* Existing Card */}
         <div className="flex items-center mb-4">
           <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-full h-16 w-16 flex items-center justify-center">
             <span className="text-3xl">👤</span>
           </div>
           <div className="ml-4">
-            <h2 className="text-xl font-bold">CRYPTOWALLET</h2>
+            <h2 className="text-xl font-bold">CLIMATE CREW</h2>
             <p className="text-sm">{account}</p>
-            <p className="text-xs text-gray-400">ID {referralId}</p>
+            <p className="text-xs text-gray-400 text-center p-0.5 white-glassmorphism">
+              ID {referralId}
+            </p>
           </div>
         </div>
         <div className="bg-gray-700 p-4 rounded-lg mb-4">
@@ -82,13 +86,16 @@ const DashBoard = () => {
           </a>
         </div>
         <div className="bg-blue-500 p-4 rounded-lg flex items-center justify-between">
-          <span className="text-white">KSN/USDT</span>
+          <span className="text-white">TEMZ/BNB</span>
           <span className="text-lg font-bold">0.0538 USDT</span>
         </div>
-        <div class="flex justify-center">
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mt-4"
-          onClick={handleSubmit}>
-            Send
+        <div className="flex justify-center">
+          <button
+            className=" hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mt-4"
+            onClick={handleSubmit}
+            style={{ backgroundColor: "#C6DAF1", color: "black" }}
+          >
+            Send Tokens
           </button>
         </div>
       </div>

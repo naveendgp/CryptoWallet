@@ -1,6 +1,7 @@
 import React from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { AiOutlineClose } from "react-icons/ai";
+import { Link } from "react-router-dom";
 
 const NavBarItem = ({ title, href, classprops }) => (
   <li className={`mx-4 cursor-pointer ${classprops}`}>
@@ -28,15 +29,14 @@ const Navbar = () => {
             href={item.href}
           />
         ))}
-        <a href="#login">
-          <li className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
+        
+          <Link to={'/login'} className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
             Login
-          </li>
-        </a>
+          </Link>
         <a href="#register">
-          <li className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
+          <Link to={'/register'} className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
             Registration
-          </li>
+          </Link>
         </a>
       </ul>
       <div className="flex relative">
@@ -74,12 +74,12 @@ const Navbar = () => {
                 classprops="my-2 text-lg"
               />
             ))}
-            <a href="#login" className="my-2 text-lg">
+            <Link to={'/login'} className="my-2 text-lg">
               Login
-            </a>
-            <a href="#register" className="my-2 text-lg">
+            </Link>
+            <Link to="/register" className="my-2 text-lg">
               Registration
-            </a>
+            </Link>
           </ul>
         )}
       </div>

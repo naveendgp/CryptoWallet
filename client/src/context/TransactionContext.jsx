@@ -4,7 +4,6 @@ import { createContact,makePayout } from "../utils/RazorPay";
 import axios from 'axios'
 import { contractABI, contractAddress } from "../utils/constants";
 import { BsCheckLg } from "react-icons/bs";
-import axios from 'axios'
 
 export const TransactionContext = React.createContext();
 
