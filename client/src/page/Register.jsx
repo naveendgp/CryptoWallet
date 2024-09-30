@@ -28,7 +28,7 @@ const Registration = () => {
           placeholder="Sponsor ID"
           value={sponsorId}
           onChange={handleInputChange}
-          className="input-field mb-7 w-full p-2 bg-grey text-black rounded-md"
+          className="input-field mb-7 w-full py-3 px-3 bg-grey text-black rounded-md"
         />
 
         {/* Error Messages with Red Cross Icons */}
@@ -57,7 +57,7 @@ const Registration = () => {
         <div className="flex justify-center space-x-4">
           
           <Link
-            to={"/dashboard"}
+            to={"/userDetails"}
             className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]"
           >
             Register

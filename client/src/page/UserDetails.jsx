@@ -1,4 +1,5 @@
 import React, { useState,useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios"; // Make sure axios is imported
 
 const RegistrationForm = () => {
@@ -80,117 +81,150 @@ const RegistrationForm = () => {
       }
   };
 
-  return (
-    <div className="max-w-lg mx-auto bg-white p-8 mt-10 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-        Registration Form
+return (
+  <div className="min-h-screen flex items-center justify-center gradient-bg-transactions px-4">
+    <div className="white-glassmorphism p-12 rounded-lg shadow-lg w-full max-w-4xl">
+      {" "}
+      {/* Increased max width */}
+      <h2 className="text-3xl font-bold text-center text-white-800 mb-8">
+        User Details
       </h2>
       <form onSubmit={handleSubmit}>
-        {/* Name Field */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="name">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        {/* Name and Email Fields (side by side) */}
+        <div className="flex flex-wrap justify-between mb-6">
+          <div className="w-full lg:w-[48%]">
+            <label
+              className="block text-white-700 font-semibold mb-2"
+              htmlFor="name"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              placeholder="Enter your full name"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div className="w-full lg:w-[48%]">
+            <label
+              className="block text-white-700 font-semibold mb-2"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="Enter your email address"
+              className="w-full px-4 py-3 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
         </div>
 
-        {/* Email Field */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="email">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        {/* Contact Number and Bank Account Name Fields (side by side) */}
+        <div className="flex flex-wrap justify-between mb-6">
+          <div className="w-full lg:w-[48%]">
+            <label
+              className="block text-white-700 font-semibold mb-2"
+              htmlFor="contact"
+            >
+              Contact Number
+            </label>
+            <input
+              type="text"
+              id="contact"
+              name="contact"
+              value={formData.contact}
+              onChange={handleChange}
+              required
+              placeholder="Enter your contact number"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div className="w-full lg:w-[48%]">
+            <label
+              className="block text-white-700 font-semibold mb-2"
+              htmlFor="accountName"
+            >
+              Bank Account Name
+            </label>
+            <input
+              type="text"
+              id="accountName"
+              name="accountName"
+              value={formData.accountName}
+              onChange={handleChange}
+              required
+              placeholder="Enter your bank account name"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
         </div>
 
-        {/* Contact Field */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="contact">
-            Contact Number
-          </label>
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        {/* IFSC Code and Bank Account Number Fields (side by side) */}
+        <div className="flex flex-wrap justify-between mb-6">
+          <div className="w-full lg:w-[48%]">
+            <label
+              className="block text-white-700 font-semibold mb-2"
+              htmlFor="ifscCode"
+            >
+              IFSC Code
+            </label>
+            <input
+              type="text"
+              id="ifscCode"
+              name="ifscCode"
+              value={formData.ifscCode}
+              onChange={handleChange}
+              required
+              placeholder="Enter your bank's IFSC code"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div className="w-full lg:w-[48%]">
+            <label
+              className="block text-white-700 font-semibold mb-2"
+              htmlFor="accountNumber"
+            >
+              Bank Account Number
+            </label>
+            <input
+              type="text"
+              id="accountNumber"
+              name="accountNumber"
+              value={formData.accountNumber}
+              onChange={handleChange}
+              required
+              placeholder="Enter your bank account number"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
         </div>
 
-        {/* Account Name Field */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="accountName">
-            Bank Account Name
-          </label>
-          <input
-            type="text"
-            id="accountName"
-            name="accountName"
-            value={formData.accountName}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+        <div className="flex justify-center items-center">
+          <Link
+            to={"/Dashboard"}
+            className="bg-[#2952e3] py-2 px-10 mx-6 mt-10 rounded-full cursor-pointer hover:bg-[#2546bd] text-white text-lg" // Increased padding and font size
+          >
+            Submit
+          </Link>
         </div>
-
-        {/* IFSC Code Field */}
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="ifscCode">
-            IFSC Code
-          </label>
-          <input
-            type="text"
-            id="ifscCode"
-            name="ifscCode"
-            value={formData.ifscCode}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-
-        {/* Account Number Field */}
-        <div className="mb-6">
-          <label className="block text-gray-700 font-semibold mb-2" htmlFor="accountNumber">
-            Bank Account Number
-          </label>
-          <input
-            type="text"
-            id="accountNumber"
-            name="accountNumber"
-            value={formData.accountNumber}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
-        >
-          Register
-        </button>
       </form>
     </div>
-  );
+  </div>
+);
+
+
+
 };
 
 export default RegistrationForm;

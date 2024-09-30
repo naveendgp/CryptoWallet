@@ -93,7 +93,7 @@ const DashBoard = () => {
           <button
             className=" hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mt-4"
             onClick={handleSubmit}
-            style={{ backgroundColor: "#C6DAF1", color: "black" }}
+            style={{ backgroundColor: "#06D6A0", color: "black" }}
           >
             Send Tokens
           </button>
