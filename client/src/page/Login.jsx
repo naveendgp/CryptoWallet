@@ -1,9 +1,36 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import "./Login.css";
 import { Link } from "react-router-dom";
 import { FaInfoCircle, FaCopy } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+  const[userReference_id,setUserReference_id] = useState(" ");
+  const[reference_id,setReference_id] = useState("");
+  const navigate = useNavigate();
+
+  console.log()
+
+  useEffect(() => {
+    const fetchAccountDetails = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/account");
+        const data = await response.json();
+        setReference_id(data.referralId);
+      } catch (error) {
+        console.error("Error fetching account details:", error);
+      }
+    };
+    fetchAccountDetails();
+  }, []);
+
+  const handleRegister = () =>{
+    if(userReference_id==reference_id)
+    {
+      navigate("/"); 
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center gradient-bg-transactions">
       <main className="flex flex-col items-center w-full px-4">
@@ -43,11 +70,14 @@ const Login = () => {
               type="text"
               placeholder="Enter ID or KSN wallet"
               style={{ color: "white" }}
+              onChange={(e) => setUserReference_id(e.target.value)} 
               className="p-2 rounded-t-lg md:rounded-l-lg md:rounded-r-none border border-gray-600 bg-black text-white w-full md:w-auto"
             />
             <button
               className="bg-blue-500 text-white py-2 px-7 rounded-b-lg md:rounded-r-lg md:rounded-l-none w-full md:w-auto"
               style={{ backgroundColor: "blue", color: "white" }}
+             onClick={handleRegister}
+
             >
               Login
             </button>

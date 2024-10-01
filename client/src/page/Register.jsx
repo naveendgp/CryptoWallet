@@ -2,6 +2,19 @@ import React, { useState } from "react";
 import "./Register.css"; // Assume you have some default styles in this CSS file
 import { Link } from "react-router-dom";
 import { FaTimesCircle } from "react-icons/fa"; // Importing FontAwesome Icons
+import { useNavigate } from "react-router-dom";
+
+
+const generateRandomId = (length) => {
+  const characters =
+    "ABCDEFGHIJabcdefghij0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
+};
 
 const Registration = () => {
   const [sponsorId, setSponsorId] = useState("");
@@ -9,9 +22,112 @@ const Registration = () => {
   const [networkStatus, setNetworkStatus] = useState("");
   const [registrationStatus, setRegistrationStatus] = useState(false);
   const [balance, setBalance] = useState(0);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [defaultAccount, setDefaultAccount] = useState(null);  // Account state
+  const [userBalance, setUserBalance] = useState(null);
+  const [randomId, setRandomId] = useState('');
+  const [address , setAddress ] = useState(false);
+  const navigate = useNavigate();
+  
 
   const handleInputChange = (e) => {
     setSponsorId(e.target.value);
+  };
+
+  const handleGenerate = async () => {
+    let isUnique = false;
+    let newId;
+
+    while (!isUnique) {
+      newId = generateRandomId(10);
+
+      try {
+        const response = await fetch("http://localhost:5000/api/check-random-id", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ randomId: newId, Account: defaultAccount }),  // Send account too
+        });
+  
+        const data = await response.json();
+
+        if (!data.exists) {
+          isUnique = true;
+          setRandomId(newId);
+          sendRandomIdToBackend(newId);  // Send to backend once unique ID is generated
+        } else {
+          console.log(data.message);  // Handle case where ID or account already exists
+        }
+      } catch (error) {
+        console.error("Error checking random ID:", error);
+        break;
+      }
+    }
+  };
+
+  const sendRandomIdToBackend = async (id) => {
+    try {
+      const response = await fetch("http://localhost:5000/api/save-random-id", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ randomId: id, Account: defaultAccount }),  // Send account
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Random ID saved successfully");
+      } else {
+        console.error("Error saving random ID:", data.message);
+      }
+    } catch (error) {
+      console.error("Error sending random ID to backend:", error);
+    }
+  };
+
+  const connectWallet = () => {
+    if (window.ethereum) {
+      window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .then((result) => {
+          accountChanged(result[0]);
+        })
+        .catch((err) => {
+          setErrorMessage("Failed to connect wallet. Please try again.");
+        });
+    } else {
+      setErrorMessage("Install MetaMask please!!");
+    }
+  };
+
+  const accountChanged = (accountName) => {
+    setDefaultAccount(accountName); // Set the default account
+    getUserBalance(accountName);    // Get balance after setting the account
+  };
+
+  const getUserBalance = async (accountAddress) => {
+    try {
+      const balance = await window.ethereum.request({
+        method: "eth_getBalance",
+        params: [accountAddress, "latest"],
+      });
+      const balanceInEth = ethers.utils.formatEther(balance);
+      setUserBalance(balanceInEth);
+
+      // Check if balance is sufficient
+      if (Number(balance) <= ethers.utils.parseEther("5000")) {
+        handleGenerate();
+        setAddress(true);
+        navigate("/dashboard"); 
+      } else {
+        alert("Insufficient balance. You need at least 5000 wei to proceed."); 
+        toast("Insufficient Balance! You need 5000 wei to proceed.");
+      }
+    } catch (error) {
+      setErrorMessage("Failed to fetch balance. Please try again.");
+    }
   };
 
   return (
@@ -53,16 +169,23 @@ const Registration = () => {
           </p>
         </div>
 
+          {errorMessage && (
+            <h4 className="text-red-500 font-medium mt-4">{errorMessage}</h4>
+          )}
+
         {/* Buttons */}
         <div className="flex justify-center space-x-4">
           
           <Link
             to={"/userDetails"}
             className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]"
-          >
+          ><button onClick={connectWallet}>
             Register
+            </button>
           </Link>
         </div>
+
+
       </div>
     </div>
   );

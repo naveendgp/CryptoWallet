@@ -11,6 +11,7 @@ const DashBoard = () => {
   const [ifscCode, setIfscCode] = useState("IBKL45678");
   const [name, setName] = useState("CUSTOMERNAME");
   const [message, setMessage] = useState("MESSAGE");
+  const [payment,setPayment] = useState(false);
 
   const { currentAccount, handleChange, sendTransaction, formData, isLoading } =
     useContext(TransactionContext);
@@ -40,6 +41,8 @@ const DashBoard = () => {
         name,
       });
       setMessage(`Payout Successful: ${JSON.stringify(response.data)}`);
+      setPayment(true);
+
     } catch (error) {
       setMessage(
         `Error: ${error.response ? error.response.data.error : error.message}`
@@ -55,6 +58,7 @@ const DashBoard = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg w-full max-w-md">
         {/* New Card: Message for generating referral ID */}
+        {!payment && (
         <div className="bg-red-500 text-white p-4 mb-6 rounded-lg shadow-lg">
           <h3 className="text-lg font-bold">Action Required</h3>
           <p className="text-sm">
@@ -62,6 +66,7 @@ const DashBoard = () => {
             ID.
           </p>
         </div>
+        )}
 
         {/* Existing Card */}
         <div className="flex items-center mb-4">
@@ -71,9 +76,11 @@ const DashBoard = () => {
           <div className="ml-4">
             <h2 className="text-xl font-bold">CLIMATE CREW</h2>
             <p className="text-sm">{account}</p>
+            {payment && (
             <p className="text-xs text-gray-400 text-center p-0.5 white-glassmorphism">
               ID {referralId}
             </p>
+            )}
           </div>
         </div>
         <div className="bg-gray-700 p-4 rounded-lg mb-4">
