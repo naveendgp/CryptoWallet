@@ -85,6 +85,8 @@ export const TransactionsProvider = ({ children }) => {
   const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
   const [transactions, setTransactions] = useState([]);
   const [referencs_id,setReference_id] = useState("0"); 
+  const [payment,setPayment] = useState(false)
+  const [TokenTxn,setTokenTxn] = useState(false)
 
 
 
@@ -196,6 +198,7 @@ export const TransactionsProvider = ({ children }) => {
       
       console.log('Payout successful:', response.data);
       alert('Payout created successfully!');
+      setPayment(true)
     } catch (error) {
       console.error('Error creating payout:', error.response?.data || error.message);
       alert('Failed to create payout. Please try again.');
@@ -203,7 +206,7 @@ export const TransactionsProvider = ({ children }) => {
   };
   
  
-  // const sendTransaction = async () => {
+  // const sendTransactions = async () => {
 
   //   try {
   //     if (ethereum) {
@@ -211,30 +214,31 @@ export const TransactionsProvider = ({ children }) => {
   //       const transactionsContract = createEthereumContract();
   //       const parsedAmount = ethers.utils.parseEther(amount);
 
-  // //       await ethereum.request({
-  // //         method: "eth_sendTransaction",
-  // //         params: [{
-  // //           from: currentAccount,
-  // //           to: addressTo,
-  // //           gas: "0x5208",
-  // //           value: parsedAmount._hex,
-  // //         }],
-  // //       });
+  //       await ethereum.request({
+  //         method: "eth_sendTransaction",
+  //         params: [{
+  //           from: currentAccount,
+  //           to: addressTo,
+  //           gas: "0x5208",
+  //           value: parsedAmount._hex,
+  //         }],
+  //       });
 
-  // //       const transactionHash = await transactionsContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
+  //       const transactionHash = await transactionsContract.addToBlockchain(addressTo, parsedAmount, message, keyword);
 
   //       setIsLoading(true);
   //       console.log(`Loading - ${transactionHash.hash}`);
   //       await transactionHash.wait();
   //       console.log(`Success - ${transactionHash.hash}`);
 
-  //       await createPayoutApi();
-
+        
   //       setIsLoading(false);
 
-  // //       const transactionsCount = await transactionsContract.getTransactionCount();
+  //     //  await createPayoutApi()
+  //        const transactionsCount = await transactionsContract.getTransactionCount();
 
   //       setTransactionCount(transactionsCount.toNumber());
+
 
 
   //       window.location.reload();
@@ -246,7 +250,7 @@ export const TransactionsProvider = ({ children }) => {
   //   }
   // };
 
-  const sendTransaction = async () => {
+  const sendReffereAmount = async () => {
     try{
       const referrerDetails = {
           name: "Referrer Name",
@@ -267,63 +271,54 @@ export const TransactionsProvider = ({ children }) => {
     }
   }
 
-  // const sendTransaction = async () => {
-  //   try {
-  //     if (ethereum) {
-  //       const { addressTo1, amount1, message } =
-  //         formData; // Updated to include different amounts
-  //       const transactionsContract = createEthereumContract();
-  //       const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
+  const sendTransaction = async () => {
+    try {
+      if (ethereum) {
+        const { addressTo1, amount1, message } =
+          formData; // Updated to include different amounts
+        const transactionsContract = createEthereumContract();
+        const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
 
-  //       // Send to the first address
-  //       await ethereum.request({
-  //         method: "eth_sendTransaction",
-  //         params: [
-  //           {
-  //             from: currentAccount,
-  //             to: addressTo1, // First recipient
-  //             gas: "0x5208",
-  //             value: parsedAmount1._hex,
-  //           },
-  //         ],
-  //       });
+        // Send to the first address
+        await ethereum.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              from: currentAccount,
+              to: addressTo1, // First recipient
+              gas: "0x5208",
+              value: parsedAmount1._hex,
+            },
+          ],
+        });
 
-  //       const transactionHash1 = await transactionsContract.addToBlockchain(
-  //         addressTo1,
-  //         parsedAmount1,
-  //         message,
-  //       );
-  //       console.log(`Loading - ${transactionHash1.hash}`);
-  //       await transactionHash1.wait();
-  //       console.log(`Success - ${transactionHash1.hash}`);
+        const transactionHash1 = await transactionsContract.addToBlockchain(
+          addressTo1,
+          parsedAmount1,
+          message,
+        );
+        console.log(`Loading - ${transactionHash1.hash}`);
+        await transactionHash1.wait();
+        setTokenTxn(true)
+        console.log(`Success - ${transactionHash1.hash}`);
 
-  //       //RazorPay
-  //       const referrerDetails = {
-  //         name: "Referrer Name",
-  //         contactNumber: "Referrer Contact Number",
-  //         email: "Referrer Email",
-  //         accountNumber: "Referrer Account Number",
-  //         ifsc: "Referrer IFSC Code",
-  //       };
-        
-  //       const contactId = await createContact(referrerDetails);
-  //       await makePayout(contactId, referrerDetails, 1000);
+        if(TokenTxn) await createPayoutApi()
 
+        console.log("Tokens sent and ₹1000 payout made to the referrer.");
 
-  //       console.log("Tokens sent and ₹1000 payout made to the referrer.");
-
-  //       const transactionsCount =
-  //         await transactionsContract.getTransactionCount();
-  //       setTransactionCount(transactionsCount.toNumber());
-  //       window.location.reload();
-  //     } else {
-  //       console.log("No ethereum object");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new Error("Transaction failed");
-  //   }
-  // };
+        const transactionsCount =
+          await transactionsContract.getTransactionCount();
+        setTransactionCount(transactionsCount.toNumber());
+        window.location.reload();
+      } else {
+        console.log("No ethereum object");
+      }
+    } catch (error) {
+      setTokenTxn(false)
+      console.log(error);
+      throw new Error("Transaction failed");
+    }
+  };
 
 
   useEffect(() => {
@@ -339,6 +334,7 @@ export const TransactionsProvider = ({ children }) => {
         transactions,
         currentAccount,
         isLoading,
+        payment,
         sendTransaction,
         handleChange,
         formData,

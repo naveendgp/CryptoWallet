@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 const cors = require('cors');
 const Razorpay = require('razorpay')
 const axios = require('axios')
-const Razorpay = require('razorpay')
-const axios = require('axios')
 const app = express();
 
 app.use(express.json());

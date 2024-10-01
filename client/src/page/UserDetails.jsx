@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Make sure axios is imported
+
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ const RegistrationForm = () => {
     accountNumber: "",
   });
   const [reference_id,setReference_id] = useState("")
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -75,6 +77,8 @@ const RegistrationForm = () => {
         console.log("Fund account created:", createFundAccountResponse.data);
     
         alert("Registration and fund account creation successful!");
+        navigate("/dashboard");
+
       } catch (error) {
         console.error("Error occurred during the API calls:", error);
         alert("There was an error during registration. Please try again.");
@@ -211,12 +215,11 @@ return (
         </div>
 
         <div className="flex justify-center items-center">
-          <Link
-            to={"/Dashboard"}
+          <button type="submit"
             className="bg-[#2952e3] py-2 px-10 mx-6 mt-10 rounded-full cursor-pointer hover:bg-[#2546bd] text-white text-lg" // Increased padding and font size
           >
             Submit
-          </Link>
+          </button>
         </div>
       </form>
     </div>

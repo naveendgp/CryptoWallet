@@ -11,9 +11,8 @@ const DashBoard = () => {
   const [ifscCode, setIfscCode] = useState("IBKL45678");
   const [name, setName] = useState("CUSTOMERNAME");
   const [message, setMessage] = useState("MESSAGE");
-  const [payment,setPayment] = useState(false);
 
-  const { currentAccount, handleChange, sendTransaction, formData, isLoading } =
+  const { currentAccount, handleChange, sendTransaction, payment,formData, isLoading } =
     useContext(TransactionContext);
 
   useEffect(() => {
@@ -51,7 +50,7 @@ const DashBoard = () => {
   };
 
   const handleSubmit = () => {
-    handlePayout();
+    sendTransaction()
   };
 
   return (
