@@ -21,6 +21,7 @@ mongoose.connect("mongodb://localhost:27017/cryptowallet")
 
 const randomIdSchema = new mongoose.Schema({
   randomId: { type: String, unique: true, required: true },
+      // reference_id: { type: String, unique: true, required: true },
   account: { type: String, unique: true, required: true },  // Make account unique
   contact_id: { type: String, unique: true },  // Razorpay contact ID
   funt_account_id: { type: String, unique: true },
@@ -52,7 +53,7 @@ app.post("/api/check-random-id", async (req, res) => {
       if (existingId) {
         res.json({ exists: true, message: 'ID or account already exists.' });
       } else {
-        res.json({ exists: false });
+        res.json({ exists: false });  
       }
     } catch (error) {
       console.error("Error checking random ID:", error);
@@ -245,6 +246,19 @@ app.post('/api/register', async (req, res) => {
   } catch (error) {
     console.error('Error registering:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+//Save the Reference_Id
+app.post('/api/saveUserReference', async (req, res) => {
+  const { reference_id } = req.body;
+
+  try {
+    const reference = new RandomId({ reference_id });
+    await reference.save();
+    res.status(200).json({ message: 'User reference ID saved successfully!' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error saving user reference ID', error });
   }
 });
 

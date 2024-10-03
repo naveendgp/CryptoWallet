@@ -86,6 +86,7 @@ export const TransactionsProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([]);
   const [referencs_id,setReference_id] = useState("0"); 
   const [payment,setPayment] = useState(false)
+  const [checkBalance,SetCheckBalance] = useState(false)
   const [TokenTxn,setTokenTxn] = useState(false)
 
 
@@ -159,6 +160,8 @@ export const TransactionsProvider = ({ children }) => {
       switchNetwork()
 
       const accounts = await ethereum.request({ method: "eth_requestAccounts", });
+      accountChanged(result[0]);
+
       setCurrentAccount(accounts[0]);
       window.location.reload();
     } catch (error) {
@@ -271,6 +274,30 @@ export const TransactionsProvider = ({ children }) => {
     }
   }
 
+  const accountChanged = (accountName) => {
+    getUserBalance(accountName);    // Get balance after setting the account
+  };
+
+  const getUserBalance = async (accountAddress) => {
+    try {
+      const balance = await window.ethereum.request({
+        method: "eth_getBalance",
+        params: [accountAddress, "latest"],
+      });
+      const balanceInEth = ethers.utils.formatEther(balance);
+
+      if (Number(balance) <= ethers.utils.parseEther("5000")) {
+        SetCheckBalance(true)
+        navigate("/userDetails"); 
+      } else {
+        alert("Insufficient balance. You need at least 5000 wei to proceed."); 
+        toast("Insufficient Balance! You need 5000 wei to proceed.");
+      }
+    } catch (error) {
+      setErrorMessage("Failed to fetch balance. Please try again.");
+    }
+  };
+
   const sendTransaction = async () => {
     try {
       if (ethereum) {
@@ -335,6 +362,7 @@ export const TransactionsProvider = ({ children }) => {
         currentAccount,
         isLoading,
         payment,
+        checkBalance,
         sendTransaction,
         handleChange,
         formData,
