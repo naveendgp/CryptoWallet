@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react"; // Import useEffect and useState
 import {
   Box,
   Typography,
@@ -11,22 +11,37 @@ import {
   TableContainer,
   useTheme,
   useMediaQuery,
-  Checkbox, // Import Checkbox
+  Checkbox,
 } from "@mui/material";
 
 export default function Dashboard() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen size is small
+  const [registrations, setRegistrations] = useState([]); // State to hold registration data
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/dashboard"); 
+        const data = await response.json();
+        setRegistrations(data); 
+      } catch (error) {
+        console.error("Error fetching registration data:", error);
+      }
+    };
+
+    fetchData();
+  }, []); 
 
   return (
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh", // Full page height
-        width: "100vw", // Full page width
-        backgroundColor: "#0a111a", // Background color for the full page
-        overflowX: "hidden", // Prevent horizontal scrolling
+        minHeight: "100vh",
+        width: "100vw",
+        backgroundColor: "#0a111a",
+        overflowX: "hidden",
       }}
     >
       {/* Header Section */}
@@ -49,7 +64,7 @@ export default function Dashboard() {
       {/* Table Container */}
       <Box
         sx={{
-          flexGrow: 1, // Makes sure the table expands to cover available space
+          flexGrow: 1,
           display: "flex",
           justifyContent: "center",
           padding: 4,
@@ -61,7 +76,7 @@ export default function Dashboard() {
             maxWidth: "100%",
             overflowX: "auto",
             color: "#ffffff",
-            backgroundColor: "#171f2b", // Dark background for table
+            backgroundColor: "#171f2b",
           }}
         >
           <Table>
@@ -80,40 +95,45 @@ export default function Dashboard() {
                 <TableCell style={{ color: "#2a86f3" }}>Referral ID</TableCell>
                 <TableCell style={{ color: "#2a86f3" }}>
                   Transferred
-                </TableCell>{" "}
-                {/* New column for the checkbox */}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* Add your table rows here */}
-              <TableRow style={{ color: "white" }}>
-                <TableCell style={{ color: "#ffffff" }}>
-                  Jeyachandran J
-                </TableCell>
-
-                <TableCell style={{ color: "#ffffff" }}>07418800609</TableCell>
-                {!isSmallScreen && (
+              {registrations.map((registration) => (
+                <TableRow key={registration.id} style={{ color: "white" }}>
                   <TableCell style={{ color: "#ffffff" }}>
-                    j.jeyachandran072@gmail.com
+                    {registration.name}
                   </TableCell>
-                )}
-                {!isSmallScreen && (
-                  <TableCell style={{ color: "#ffffff" }}>123456789</TableCell>
-                )}
-                <TableCell style={{ color: "#ffffff" }}>
-                  cont_P3svCQs89QayvC
-                </TableCell>
-                <TableCell style={{ color: "#ffffff" }}>
-                  <Checkbox  /> {/* Checkbox */}
-                </TableCell>
-              </TableRow>
-              {/* Add other rows here */}
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.contact}
+                  </TableCell>
+                  {!isSmallScreen && (
+                    <TableCell style={{ color: "#ffffff" }}>
+                      {registration.email}
+                    </TableCell>
+                  )}
+                  {!isSmallScreen && (
+                    <TableCell style={{ color: "#ffffff" }}>
+                      {registration.accountNumber}
+                    </TableCell>
+                  )}
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.randomId}
+                  </TableCell>
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.TokenTxn ? (
+                      <Checkbox /> // Render checkbox if TokenTxn is true
+                    ) : (
+                      "" // Render nothing if TokenTxn is false
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
 
-      {/* Footer or additional sections if any */}
     </Box>
   );
 }
