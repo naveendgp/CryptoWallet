@@ -55,32 +55,13 @@ const Registration = () => {
 
     if(userReference_id.trim()==reference_id.trim())
     {
-      // saveReferenceId()
       handleGenerate()
       navigate("/userDetails"); 
     }
   }
 
 
-  const saveReferenceId = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/saveUserReference', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ reference_id:userReference_id }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log(data.message); // Handle success
-      } else {
-        console.error(data.message); // Handle error
-      }
-    } catch (error) {
-      console.error('Error saving to database:', error);
-    }
-  };
+  localStorage.setItem('ReferalId',userReference_id);
   
 
  

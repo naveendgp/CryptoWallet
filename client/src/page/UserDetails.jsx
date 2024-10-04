@@ -12,7 +12,7 @@ const RegistrationForm = () => {
     ifscCode: "",
     accountNumber: "",
   });
-  const [reference_id,setReference_id] = useState("")
+  const [randomId,setRandomId] = useState("")
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -28,7 +28,7 @@ const RegistrationForm = () => {
       try {
         const response = await fetch("http://localhost:5000/api/account");
         const data = await response.json();
-        setReference_id(data.referralId);
+        setRandomId(data.referralId);
       } catch (error) {
         console.error("Error fetching account details:", error);
       }
@@ -36,54 +36,70 @@ const RegistrationForm = () => {
     fetchAccountDetails();
   }, []);
 
-  console.log("referenceId",reference_id);
+
+  const id = localStorage.getItem('ReferalId');
+  localStorage.setItem('name',formData.name);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
-
-   
-    axios.post('http://localhost:5000/api/register', formData)
+  
+    const finalFormData = {
+      ...formData,
+      randomId, // Add the randomId from useEffect
+      id // Add the id from localStorage
+    };
+  
+    axios.post('http://localhost:5000/api/register', finalFormData)
       .then(response => {
         console.log(response.data);
         alert("Registration successful!");
       })
       .catch(error => {
-        console.error("There was an error submitting the form!", error);
+        if (error.response && error.response.status === 400) {
+          alert("Email or Account Number already exists!");
+        } else {
+          console.error("There was an error submitting the form!", error);
+          alert("There was an error submitting the form. Please try again.");
+        }
       });
+  
 
-      try {
-        // First API call: Create Contact
-        const createContactResponse = await axios.post('http://localhost:5000/create-contact', {
-          name: formData.name,
-          email: formData.email,
-          contact: formData.contact,
-          randomId: reference_id, 
-        });
-    
-        const { id: contact_id } = createContactResponse.data;
-    
-        console.log("Contact created:", createContactResponse.data);
-    
-        const createFundAccountResponse = await axios.post('http://localhost:5000/create-fund-account', {
-          randomId: reference_id, 
-          account_type: "bank_account",
-          bank_account: {
-            name: formData.accountName,
-            ifsc: formData.ifscCode,
-            account_number: formData.accountNumber,
-          },
-        });
-    
-        console.log("Fund account created:", createFundAccountResponse.data);
-    
-        alert("Registration and fund account creation successful!");
-        navigate("/dashboard");
 
-      } catch (error) {
-        console.error("Error occurred during the API calls:", error);
-        alert("There was an error during registration. Please try again.");
-      }
+    //   try {
+    //     // First API call: Create Contact
+    //     const createContactResponse = await axios.post('http://localhost:5000/create-contact', {
+    //       name: formData.name,
+    //       email: formData.email,
+    //       contact: formData.contact,
+    //       randomId: reference_id, 
+    //     });
+    
+    //     const { id: contact_id } = createContactResponse.data;
+    
+    //     console.log("Contact created:", createContactResponse.data);
+    
+    //     const createFundAccountResponse = await axios.post('http://localhost:5000/create-fund-account', {
+    //       randomId: reference_id, 
+    //       account_type: "bank_account",
+    //       bank_account: {
+    //         name: formData.accountName,
+    //         ifsc: formData.ifscCode,
+    //         account_number: formData.accountNumber,
+    //       },
+    //     });
+    
+    //     console.log("Fund account created:", createFundAccountResponse.data);
+    
+    //     alert("Registration and fund account creation successful!");
+    //     navigate("/dashboard");
+
+    //   } catch (error) {
+    //     console.error("Error occurred during the API calls:", error);
+    //     alert("There was an error during registration. Please try again.");
+    //   }
   };
+
+  
 
 return (
   <div className="min-h-screen flex items-center justify-center gradient-bg-transactions px-4">

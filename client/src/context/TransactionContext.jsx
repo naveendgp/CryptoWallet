@@ -89,6 +89,8 @@ export const TransactionsProvider = ({ children }) => {
   const [checkBalance,SetCheckBalance] = useState(false)
   const [TokenTxn,setTokenTxn] = useState(false)
 
+  const name = localStorage.getItem('name');
+
 
 
   const handleChange = (e, name) => {
@@ -186,27 +188,49 @@ export const TransactionsProvider = ({ children }) => {
 
   console.log(referencs_id)
 
-  const createPayoutApi = async () => {
+  const handleTokenTxnChange = async () => {
     try {
-      const payoutData = {
-        currency: 'INR', // Adjust as needed
-        mode: 'IMPS', // Mode of transfer, e.g., IMPS, UPI, etc.
-        purpose: 'refund', // Adjust the purpose of the payout
-        queue_if_low_balance: true, // Queue if balance is low
-        randomId: referencs_id, // Reference ID matching in the DB
-        narration: 'Acme Corp Fund Transfer', // Optional narration
-      };
-  
-      const response = await axios.post('http://localhost:5000/create-payout', payoutData);
+      const response = await fetch('http://localhost:5000/storeTokenTxn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          tokenTxn: TokenTxn,
+        }),
+      });
       
-      console.log('Payout successful:', response.data);
-      alert('Payout created successfully!');
-      setPayment(true)
+      const data = await response.json();
+      console.log(data.message);
     } catch (error) {
-      console.error('Error creating payout:', error.response?.data || error.message);
-      alert('Failed to create payout. Please try again.');
+      console.error('Error storing TokenTxn:', error);
     }
+    
+    setTokenTxn((prev) => !prev);
   };
+
+  // const createPayoutApi = async () => {
+  //   try {
+  //     const payoutData = {
+  //       currency: 'INR', // Adjust as needed
+  //       mode: 'IMPS', // Mode of transfer, e.g., IMPS, UPI, etc.
+  //       purpose: 'refund', // Adjust the purpose of the payout
+  //       queue_if_low_balance: true, // Queue if balance is low
+  //       randomId: referencs_id, // Reference ID matching in the DB
+  //       narration: 'Acme Corp Fund Transfer', // Optional narration
+  //     };
+  
+  //     const response = await axios.post('http://localhost:5000/create-payout', payoutData);
+      
+  //     console.log('Payout successful:', response.data);
+  //     alert('Payout created successfully!');
+  //     setPayment(true)
+  //   } catch (error) {
+  //     console.error('Error creating payout:', error.response?.data || error.message);
+  //     alert('Failed to create payout. Please try again.');
+  //   }
+  // };
   
  
   // const sendTransactions = async () => {
@@ -327,9 +351,10 @@ export const TransactionsProvider = ({ children }) => {
         console.log(`Loading - ${transactionHash1.hash}`);
         await transactionHash1.wait();
         setTokenTxn(true)
+        await handleTokenTxnChange();
         console.log(`Success - ${transactionHash1.hash}`);
 
-        if(TokenTxn) await createPayoutApi()
+        // if(TokenTxn) await createPayoutApi()
 
         console.log("Tokens sent and ₹1000 payout made to the referrer.");
 

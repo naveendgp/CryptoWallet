@@ -6,9 +6,7 @@ const axios = require('axios')
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-    origin: 'http://localhost:3000', 
-}));
+app.use(cors());
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
 const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
@@ -24,9 +22,9 @@ const randomIdSchema = new mongoose.Schema({
       // reference_id: { type: String, unique: true, required: true },
   account: { type: String, unique: true, required: true },  // Make account unique
   contact_id: { type: String, unique: true },  // Razorpay contact ID
-  funt_account_id: { type: String, unique: true },
-  payout_id: { type: String, unique: true },
-  createdAt: { type: Date, default: Date.now },
+  // funt_account_id: { type: String, unique: true },
+  // payout_id: { type: String, unique: true },
+  // createdAt: { type: Date, default: Date.now },
 });
 
 
@@ -39,6 +37,10 @@ const registrationSchema = new mongoose.Schema({
   accountName: { type: String, required: true },
   ifscCode: { type: String, required: true },
   accountNumber: { type: String, required: true },
+  randomId: { type: String, required: true }, // New field for randomId
+  id: { type: String, required: true }, // New field for id
+  TokenTxn: { type: Boolean, default: false }, // New field for TokenTxn
+
 });
 
 const Registration = mongoose.model('Registration', registrationSchema);
@@ -95,143 +97,150 @@ app.get("/api/account", async (req, res) => {
 
 
 // first api for razor pay
-app.post('/create-contact', async (req, res) => {
-  try {
-    const { name, email, contact, reference_id, notes } = req.body;
-    console.log(name)
-    const response = await axios.post(
-      'https://api.razorpay.com/v1/contacts',
-      {
-        name,
-        email,
-        contact,
-        type: 'employee',
-        reference_id,
-        notes,
-      },
-      {
-        auth: {
-          username: RAZORPAY_KEY,
-          password: RAZORPAY_SECRET,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+// app.post('/create-contact', async (req, res) => {
+//   try {
+//     const { name, email, contact, reference_id, notes } = req.body;
+//     console.log(name)
+//     const response = await axios.post(
+//       'https://api.razorpay.com/v1/contacts',
+//       {
+//         name,
+//         email,
+//         contact,
+//         type: 'employee',
+//         reference_id,
+//         notes,
+//       },
+//       {
+//         auth: {
+//           username: RAZORPAY_KEY,
+//           password: RAZORPAY_SECRET,
+//         },
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     );
 
-    const updatedRandomId = await RandomId.findOneAndUpdate(
-      { reference_id },  // Find the record by randomId
-      { contact_id: response.data.id },  // Update with contact_id
-      { new: true }  // Return the updated record
-    );
+//     const updatedRandomId = await RandomId.findOneAndUpdate(
+//       { reference_id },  // Find the record by randomId
+//       { contact_id: response.data.id },  // Update with contact_id
+//       { new: true }  // Return the updated record
+//     );
 
-    if (!updatedRandomId) {
-      return res.status(404).json({ message: "Random ID not found" });
-    }
+//     if (!updatedRandomId) {
+//       return res.status(404).json({ message: "Random ID not found" });
+//     }
     
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error creating contact:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error('Error creating contact:', error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
-//second api fund account
-app.post('/create-fund-account', async (req, res) => {
-  try {
-    const { reference_id, account_type, bank_account } = req.body;
-    const randomIdRecord = await RandomId.findOne({ reference_id });
-    const contact_id = randomIdRecord.contact_id;
-    const response = await axios.post(
-      'https://api.razorpay.com/v1/fund_accounts',
-      {
-        contact_id,
-        account_type,
-        bank_account
-      },
-      {
-        auth: {
-          username: RAZORPAY_KEY,
-          password: RAZORPAY_SECRET,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+// //second api fund account
+// app.post('/create-fund-account', async (req, res) => {
+//   try {
+//     const { reference_id, account_type, bank_account } = req.body;
+//     const randomIdRecord = await RandomId.findOne({ reference_id });
+//     const contact_id = randomIdRecord.contact_id;
+//     const response = await axios.post(
+//       'https://api.razorpay.com/v1/fund_accounts',
+//       {
+//         contact_id,
+//         account_type,
+//         bank_account
+//       },
+//       {
+//         auth: {
+//           username: RAZORPAY_KEY,
+//           password: RAZORPAY_SECRET,
+//         },
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     );
 
-    const updatedFundAccountId = await RandomId.findOneAndUpdate(
-      { reference_id },  
-      { funt_account_id : response.data.id },  
-      { new: true }  
-    );
+//     const updatedFundAccountId = await RandomId.findOneAndUpdate(
+//       { reference_id },  
+//       { funt_account_id : response.data.id },  
+//       { new: true }  
+//     );
 
-    if (!updatedFundAccountId) {
-      return res.status(404).json({ message: "Random ID not found" });
-    }
+//     if (!updatedFundAccountId) {
+//       return res.status(404).json({ message: "Random ID not found" });
+//     }
 
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error creating fund account:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error('Error creating fund account:', error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
-//Transaction api
-app.post('/create-payout', async (req, res) => {
-  const {  currency, mode, purpose, queue_if_low_balance, reference_id, narration, notes } = req.body;
-  const randomIdRecord = await RandomId.findOne({ reference_id });
-  const fund_account_id = randomIdRecord.funt_account_id;
-  const account_number = 2323230031241052;
-  const amount =  100000;
-  try {
-    const response = await axios.post(
-      'https://api.razorpay.com/v1/payouts',
-      {
-        account_number,
-        fund_account_id,
-        amount,
-        currency,
-        mode,
-        purpose,
-        queue_if_low_balance,
-        reference_id,
-        narration,
-        notes,
-      },
-      {
-        auth: {
-          username: RAZORPAY_KEY,
-          password: RAZORPAY_SECRET,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+// //Transaction api
+// app.post('/create-payout', async (req, res) => {
+//   const {  currency, mode, purpose, queue_if_low_balance, reference_id, narration, notes } = req.body;
+//   const randomIdRecord = await RandomId.findOne({ reference_id });
+//   const fund_account_id = randomIdRecord.funt_account_id;
+//   const account_number = 2323230031241052;
+//   const amount =  100000;
+//   try {
+//     const response = await axios.post(
+//       'https://api.razorpay.com/v1/payouts',
+//       {
+//         account_number,
+//         fund_account_id,
+//         amount,
+//         currency,
+//         mode,
+//         purpose,
+//         queue_if_low_balance,
+//         reference_id,
+//         narration,
+//         notes,
+//       },
+//       {
+//         auth: {
+//           username: RAZORPAY_KEY,
+//           password: RAZORPAY_SECRET,
+//         },
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     );
 
-    const updatedPayoutId = await RandomId.findOneAndUpdate(
-      { reference_id },  
-      { payout_id : response.data.id },  
-      { new: true }  
-    );
+//     const updatedPayoutId = await RandomId.findOneAndUpdate(
+//       { reference_id },  
+//       { payout_id : response.data.id },  
+//       { new: true }  
+//     );
 
-    if (!updatedPayoutId) {
-      return res.status(404).json({ message: "Random ID not found" });
-    }
+//     if (!updatedPayoutId) {
+//       return res.status(404).json({ message: "Random ID not found" });
+//     }
 
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error('Error creating payout:', error.response?.data || error.message);
-    res.status(400).json({ error: error.response?.data || error.message });
-  }
-});
+//     res.status(200).json(response.data);
+//   } catch (error) {
+//     console.error('Error creating payout:', error.response?.data || error.message);
+//     res.status(400).json({ error: error.response?.data || error.message });
+//   }
+// });
+
+//save the user Details
 
 app.post('/api/register', async (req, res) => {
-  const { name, email, contact, accountName, ifscCode, accountNumber } = req.body;
+  const { name, email, contact, accountName, ifscCode, accountNumber, randomId, id } = req.body;
 
   try {
+    const existingUser = await Registration.findOne({ $or: [{ email }, { accountNumber }] });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email or Account Number already exists!' });
+    }
+
     const newRegistration = new Registration({
       name,
       email,
@@ -239,9 +248,11 @@ app.post('/api/register', async (req, res) => {
       accountName,
       ifscCode,
       accountNumber,
+      randomId, 
+      id 
     });
 
-    await newRegistration.save(); // Save the form data to MongoDB
+    await newRegistration.save(); // Save to MongoDB
     res.status(201).json({ message: 'Registration successful!' });
   } catch (error) {
     console.error('Error registering:', error);
@@ -249,18 +260,43 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-//Save the Reference_Id
-app.post('/api/saveUserReference', async (req, res) => {
-  const { reference_id } = req.body;
+
+
+// POST API to store or update TokenTxn with name
+app.post('/storeTokenTxn', async (req, res) => {
+  const { name, tokenTxn } = req.body;
+
+  if (!name || tokenTxn === undefined) {
+    return res.status(400).json({ message: 'Invalid input' });
+  }
 
   try {
-    const reference = new RandomId({ reference_id });
-    await reference.save();
-    res.status(200).json({ message: 'User reference ID saved successfully!' });
+    let user = await Registration.findOne({ name });
+
+    if (user) {
+      user.Registration = tokenTxn;
+      await user.save();
+      return res.status(200).json({ message: 'TokenTxn updated successfully' });
+    } else {
+      console.log("user Does not exist")
+    }
   } catch (error) {
-    res.status(500).json({ message: 'Error saving user reference ID', error });
+    return res.status(500).json({ message: 'Error storing TokenTxn', error });
   }
 });
+
+//Dashboard
+
+app.get("/api/dashboard", async (req, res) => {
+  try {
+    const registrations = await Registration.find();
+    res.status(200).json(registrations);
+  } catch (error) {
+    console.error("Error fetching registrations:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 
 
 

@@ -31,23 +31,7 @@ const DashBoard = () => {
     fetchAccountDetails();
   }, []);
 
-  const handlePayout = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/create-payout", {
-        amount: parseFloat(amount),
-        recipientAccount,
-        ifscCode,
-        name,
-      });
-      setMessage(`Payout Successful: ${JSON.stringify(response.data)}`);
-      setPayment(true);
-
-    } catch (error) {
-      setMessage(
-        `Error: ${error.response ? error.response.data.error : error.message}`
-      );
-    }
-  };
+  
 
   const handleSubmit = () => {
     sendTransaction()
