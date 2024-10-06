@@ -51,13 +51,13 @@ const Registration = () => {
   }, []);
 
   const handleRegister = () =>{
-    // handleGenerate()
 
     if(userReference_id.trim()==reference_id.trim())
     {
-      handleGenerate()
-      navigate("/userDetails"); 
+       handleGenerate()
+       navigate("/userDetails"); 
     }
+
   }
 
 

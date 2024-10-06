@@ -11,20 +11,25 @@ app.use(cors());
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
 const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
 
+const uri = "mongodb+srv://jeyachandran72jj:jeyan%40zeone123@cryptowallet.vgo84.mongodb.net/";
+
+mongoose.connect(uri)
+    .then(() => console.log("MongoDB Atlas connected"))
+    .catch((err) => console.log("Error connecting to MongoDB Atlas:", err));
 
 
-mongoose.connect("mongodb://localhost:27017/cryptowallet")
-.then(() => console.log("MongoDB connected"))
-.catch((err) => console.log("Error connecting to MongoDB:", err));
+// mongoose.connect("mongodb://localhost:27017/cryptowallet")
+// .then(() => console.log("MongoDB connected"))
+// .catch((err) => console.log("Error connecting to MongoDB:", err));
 
 const randomIdSchema = new mongoose.Schema({
   randomId: { type: String, unique: true, required: true },
-      // reference_id: { type: String, unique: true, required: true },
+  // reference_id: { type: String, unique: true, required: true },
   account: { type: String, unique: true, required: true },  // Make account unique
-  contact_id: { type: String, unique: true },  // Razorpay contact ID
+  //contact_id: { type: String, unique: true } Razorpay contact ID
   // funt_account_id: { type: String, unique: true },
   // payout_id: { type: String, unique: true },
-  // createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now },
 });
 
 
@@ -66,6 +71,7 @@ app.post("/api/check-random-id", async (req, res) => {
 // Save randomId and Account, ensuring uniqueness
 app.post("/api/save-random-id", async (req, res) => {
   const { randomId, Account } = req.body;
+  console.log('randomId,',req.body)
 
   try {
     const newRandomId = new RandomId({ randomId, account: Account });

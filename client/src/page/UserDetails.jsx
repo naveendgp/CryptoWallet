@@ -53,6 +53,7 @@ const RegistrationForm = () => {
       .then(response => {
         console.log(response.data);
         alert("Registration successful!");
+        navigate('/dashboard');
       })
       .catch(error => {
         if (error.response && error.response.status === 400) {
