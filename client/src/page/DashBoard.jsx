@@ -18,7 +18,7 @@ const DashBoard = () => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/account");
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
         const data = await response.json();
 
         setAccount(data.account);
@@ -69,7 +69,7 @@ const DashBoard = () => {
         <div className="bg-gray-700 p-4 rounded-lg mb-4">
           <h3 className="text-sm">Personal link</h3>
           <a
-            href="http://localhost:3000/dashboard"
+            href="https://cryptowallet-2.onrender.com/dashboard"
             className="text-blue-400 hover:underline"
           >
             http://localhost:3000/dashboard

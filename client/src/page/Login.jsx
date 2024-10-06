@@ -14,7 +14,7 @@ const Login = () => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/account");
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
         const data = await response.json();
         setReference_id(data.referralId);
       } catch (error) {

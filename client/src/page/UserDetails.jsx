@@ -26,7 +26,7 @@ const RegistrationForm = () => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/account");
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
         const data = await response.json();
         setRandomId(data.referralId);
       } catch (error) {
@@ -49,7 +49,7 @@ const RegistrationForm = () => {
       id // Add the id from localStorage
     };
   
-    axios.post('http://localhost:5000/api/register', finalFormData)
+    axios.post('https://cryptowallet-2.onrender.com/api/register', finalFormData)
       .then(response => {
         console.log(response.data);
         alert("Registration successful!");

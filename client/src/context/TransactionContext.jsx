@@ -176,7 +176,7 @@ export const TransactionsProvider = ({ children }) => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/account");
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
         const data = await response.json();
         setReference_id(data.referralId);
       } catch (error) {
@@ -190,7 +190,7 @@ export const TransactionsProvider = ({ children }) => {
 
   const handleTokenTxnChange = async () => {
     try {
-      const response = await fetch('http://localhost:5000/storeTokenTxn', {
+      const response = await fetch('https://cryptowallet-2.onrender.com/storeTokenTxn', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

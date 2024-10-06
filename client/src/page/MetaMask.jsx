@@ -31,7 +31,7 @@ const MetaMask = () => {
       newId = generateRandomId(10);
 
       try {
-        const response = await fetch("http://localhost:5000/api/check-random-id", {
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/check-random-id", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -57,7 +57,7 @@ const MetaMask = () => {
 
   const sendRandomIdToBackend = async (id) => {
     try {
-      const response = await fetch("http://localhost:5000/api/save-random-id", {
+      const response = await fetch("https://cryptowallet-2.onrender.com/api/save-random-id", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
