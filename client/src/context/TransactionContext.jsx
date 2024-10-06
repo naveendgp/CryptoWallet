@@ -168,6 +168,39 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
+//  const TrustWallet = async () => {
+//    try {
+//      console.log("Initializing WalletConnect provider...");
+
+//      // Use Infura endpoint for opBNB mainnet
+//      const provider = new WalletConnectProvider({
+//        rpc: {
+//          56: "https://opbnb-mainnet.infura.io/v3/e21a3d8ffc304d2bb73852c7e0cd0212", // Infura endpoint for opBNB
+//        },
+//        qrcode: true, // Enable QR code for WalletConnect
+//      });
+
+//      // Enable WalletConnect session (show QR code to scan)
+//      await provider.enable();
+//      console.log("WalletConnect provider enabled...");
+
+//      // Create ethers provider using WalletConnect provider
+//      const ethersProvider = new ethers.providers.Web3Provider(provider);
+//      console.log("Ethers provider initialized...");
+
+//      // Get signer and account
+//      const signer = ethersProvider.getSigner();
+//      const account = await signer.getAddress();
+
+//      // Set connected account to state
+//      setCurrentAccount(account);
+//      console.log("Connected account:", account);
+//    } catch (error) {
+//      console.error("Error connecting to Trust Wallet:", error);
+//      alert("Unable to connect to Trust Wallet. Please try again.");
+//    }
+//  }
+
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {

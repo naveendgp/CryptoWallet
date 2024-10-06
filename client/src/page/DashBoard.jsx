@@ -57,7 +57,7 @@ const DashBoard = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg w-full max-w-md">
         {/* New Card: Message for generating referral ID */}
-        {!payment && (
+        {payment && (
         <div className="bg-red-500 text-white p-4 mb-6 rounded-lg shadow-lg">
           <h3 className="text-lg font-bold">Action Required</h3>
           <p className="text-sm">
@@ -75,7 +75,7 @@ const DashBoard = () => {
           <div className="ml-4">
             <h2 className="text-xl font-bold">CLIMATE CREW</h2>
             <p className="text-sm">{account}</p>
-            {payment && (
+            {!payment && (
             <p className="text-xs text-gray-400 text-center p-0.5 white-glassmorphism">
               ID {referralId}
             </p>
