@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; // Import useEffect and useState
+import React, { useEffect, useState } from "react"; 
 import {
   Box,
   Typography,
@@ -16,8 +16,17 @@ import {
 
 export default function Dashboard() {
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen size is small
-  const [registrations, setRegistrations] = useState([]); // State to hold registration data
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); 
+  const [registrations, setRegistrations] = useState([]); 
+  const [hiddenRows, setHiddenRows] = useState({}); 
+
+  // Fetch hidden rows from localStorage when the component mounts
+  useEffect(() => {
+    const savedHiddenRows = localStorage.getItem("hiddenRows");
+    if (savedHiddenRows) {
+      setHiddenRows(JSON.parse(savedHiddenRows));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +42,17 @@ export default function Dashboard() {
     fetchData();
   }, []); 
 
+  const handleCheckboxChange = (id) => {
+    setHiddenRows((prev) => {
+      const updatedHiddenRows = { ...prev, [id]: !prev[id] };
+      
+      // Save updated hiddenRows to localStorage
+      localStorage.setItem("hiddenRows", JSON.stringify(updatedHiddenRows));
+      
+      return updatedHiddenRows;
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -44,7 +64,6 @@ export default function Dashboard() {
         overflowX: "hidden",
       }}
     >
-      {/* Header Section */}
       <Box
         sx={{
           display: "flex",
@@ -61,7 +80,6 @@ export default function Dashboard() {
         </div>
       </Box>
 
-      {/* Table Container */}
       <Box
         sx={{
           flexGrow: 1,
@@ -99,41 +117,48 @@ export default function Dashboard() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {registrations.map((registration) => (
-                <TableRow key={registration.id} style={{ color: "white" }}>
-                  <TableCell style={{ color: "#ffffff" }}>
-                    {registration.name}
-                  </TableCell>
-                  <TableCell style={{ color: "#ffffff" }}>
-                    {registration.contact}
-                  </TableCell>
-                  {!isSmallScreen && (
+              {registrations
+                .filter((registration) => !hiddenRows[registration.id]) // Only show rows that are not hidden
+                .map((registration) => (
+                  <TableRow key={registration.id} style={{ color: "white" }}>
                     <TableCell style={{ color: "#ffffff" }}>
-                      {registration.email}
+                      {registration.name}
                     </TableCell>
-                  )}
-                  {!isSmallScreen && (
                     <TableCell style={{ color: "#ffffff" }}>
-                      {registration.accountNumber}
+                      {registration.contact}
                     </TableCell>
-                  )}
-                  <TableCell style={{ color: "#ffffff" }}>
-                    {registration.randomId}
-                  </TableCell>
-                  <TableCell style={{ color: "#ffffff" }}>
-                    {registration.TokenTxn ? (
-                      <Checkbox /> // Render checkbox if TokenTxn is true
-                    ) : (
-                      "" // Render nothing if TokenTxn is false
+                    {!isSmallScreen && (
+                      <TableCell style={{ color: "#ffffff" }}>
+                        {registration.email}
+                      </TableCell>
                     )}
-                  </TableCell>
-                </TableRow>
-              ))}
+                    {!isSmallScreen && (
+                      <TableCell style={{ color: "#ffffff" }}>
+                        {registration.accountNumber}
+                      </TableCell>
+                    )}
+                    <TableCell style={{ color: "#ffffff" }}>
+                      {registration.randomId}
+                    </TableCell>
+                    <TableCell style={{ color: "#ffffff" }}>
+                      {registration.TokenTxn && (
+                        <Checkbox
+                          checked={hiddenRows[registration.id] || false}
+                          onChange={() => handleCheckboxChange(registration.id)} // Toggle hidden state
+                          style={{
+                            backgroundColor: hiddenRows[registration.id]
+                              ? "green" // Set checkbox background color to green if checked
+                              : "white", // Default color
+                          }}
+                        />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Box>
-
     </Box>
   );
 }
