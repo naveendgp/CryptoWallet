@@ -18,7 +18,7 @@ const DashBoard = () => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/account");
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
         const data = await response.json();
 
         setAccount(data.account);
@@ -31,23 +31,7 @@ const DashBoard = () => {
     fetchAccountDetails();
   }, []);
 
-  const handlePayout = async () => {
-    try {
-      const response = await axios.post("http://localhost:5000/create-payout", {
-        amount: parseFloat(amount),
-        recipientAccount,
-        ifscCode,
-        name,
-      });
-      setMessage(`Payout Successful: ${JSON.stringify(response.data)}`);
-      setPayment(true);
-
-    } catch (error) {
-      setMessage(
-        `Error: ${error.response ? error.response.data.error : error.message}`
-      );
-    }
-  };
+  
 
   const handleSubmit = () => {
     sendTransaction()
@@ -85,7 +69,7 @@ const DashBoard = () => {
         <div className="bg-gray-700 p-4 rounded-lg mb-4">
           <h3 className="text-sm">Personal link</h3>
           <a
-            href="http://localhost:3000/dashboard"
+            href="https://cryptowallet-2.onrender.com/dashboard"
             className="text-blue-400 hover:underline"
           >
             http://localhost:3000/dashboard

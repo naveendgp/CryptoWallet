@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect,useContext } from "react";
 import "./Register.css"; // Assume you have some default styles in this CSS file
 import { Link } from "react-router-dom";
 import { FaTimesCircle } from "react-icons/fa"; // Importing FontAwesome Icons
 import { useNavigate } from "react-router-dom";
+import { TransactionContext } from "../context/TransactionContext";
+
 
 
 const generateRandomId = (length) => {
@@ -17,7 +19,6 @@ const generateRandomId = (length) => {
 };
 
 const Registration = () => {
-  const [sponsorId, setSponsorId] = useState("");
   const [walletStatus, setWalletStatus] = useState(false);
   const [networkStatus, setNetworkStatus] = useState("");
   const [registrationStatus, setRegistrationStatus] = useState(false);
@@ -27,12 +28,43 @@ const Registration = () => {
   const [userBalance, setUserBalance] = useState(null);
   const [randomId, setRandomId] = useState('');
   const [address , setAddress ] = useState(false);
+  const[userReference_id,setUserReference_id] = useState(" ");
+  const[reference_id,setReference_id] = useState("");
+
+  const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
+
   const navigate = useNavigate();
+
+  console.log()
+
+  useEffect(() => {
+    const fetchAccountDetails = async () => {
+      try {
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
+        const data = await response.json();
+        setReference_id(data.referralId);
+      } catch (error) {
+        console.error("Error fetching account details:", error);
+      }
+    };
+    fetchAccountDetails();
+  }, []);
+
+  const handleRegister = () =>{
+
+    if(userReference_id.trim()==reference_id.trim())
+    {
+       handleGenerate()
+       navigate("/userDetails"); 
+    }
+
+  }
+
+
+  localStorage.setItem('ReferalId',userReference_id);
   
 
-  const handleInputChange = (e) => {
-    setSponsorId(e.target.value);
-  };
+ 
 
   const handleGenerate = async () => {
     let isUnique = false;
@@ -40,14 +72,15 @@ const Registration = () => {
 
     while (!isUnique) {
       newId = generateRandomId(10);
+      console.log("jj",newId)
 
       try {
-        const response = await fetch("http://localhost:5000/api/check-random-id", {
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/check-random-id", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ randomId: newId, Account: defaultAccount }),  // Send account too
+          body: JSON.stringify({ randomId: newId, Account: currentAccount }),  // Send account too
         });
   
         const data = await response.json();
@@ -68,12 +101,12 @@ const Registration = () => {
 
   const sendRandomIdToBackend = async (id) => {
     try {
-      const response = await fetch("http://localhost:5000/api/save-random-id", {
+      const response = await fetch("https://cryptowallet-2.onrender.com/api/save-random-id", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ randomId: id, Account: defaultAccount }),  // Send account
+        body: JSON.stringify({ randomId: id, Account: currentAccount }),  // Send account
       });
 
       const data = await response.json();
@@ -87,48 +120,10 @@ const Registration = () => {
     }
   };
 
-  const connectWallet = () => {
-    if (window.ethereum) {
-      window.ethereum
-        .request({ method: "eth_requestAccounts" })
-        .then((result) => {
-          accountChanged(result[0]);
-        })
-        .catch((err) => {
-          setErrorMessage("Failed to connect wallet. Please try again.");
-        });
-    } else {
-      setErrorMessage("Install MetaMask please!!");
-    }
-  };
 
-  const accountChanged = (accountName) => {
-    setDefaultAccount(accountName); // Set the default account
-    getUserBalance(accountName);    // Get balance after setting the account
-  };
 
-  const getUserBalance = async (accountAddress) => {
-    try {
-      const balance = await window.ethereum.request({
-        method: "eth_getBalance",
-        params: [accountAddress, "latest"],
-      });
-      const balanceInEth = ethers.utils.formatEther(balance);
-      setUserBalance(balanceInEth);
-
-      // Check if balance is sufficient
-      if (Number(balance) <= ethers.utils.parseEther("5000")) {
-        handleGenerate();
-        setAddress(true);
-        navigate("/dashboard"); 
-      } else {
-        alert("Insufficient balance. You need at least 5000 wei to proceed."); 
-        toast("Insufficient Balance! You need 5000 wei to proceed.");
-      }
-    } catch (error) {
-      setErrorMessage("Failed to fetch balance. Please try again.");
-    }
-  };
+ 
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gradient-bg-transactions">
@@ -142,8 +137,8 @@ const Registration = () => {
         <input
           type="text"
           placeholder="Sponsor ID"
-          value={sponsorId}
-          onChange={handleInputChange}
+          value={userReference_id}
+          onChange={(e) => setUserReference_id(e.target.value)} 
           className="input-field mb-7 w-full py-3 px-3 bg-grey text-black rounded-md"
         />
 
@@ -176,13 +171,10 @@ const Registration = () => {
         {/* Buttons */}
         <div className="flex justify-center space-x-4">
           
-          <Link
-            to={"/userDetails"}
-            className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]"
-          ><button onClick={connectWallet}>
+         
+          <button className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]" onClick={handleRegister}>
             Register
             </button>
-          </Link>
         </div>
 
 

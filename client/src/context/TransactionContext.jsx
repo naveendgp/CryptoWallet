@@ -86,7 +86,10 @@ export const TransactionsProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([]);
   const [referencs_id,setReference_id] = useState("0"); 
   const [payment,setPayment] = useState(false)
+  const [checkBalance,SetCheckBalance] = useState(false)
   const [TokenTxn,setTokenTxn] = useState(false)
+
+  const name = localStorage.getItem('name');
 
 
 
@@ -159,6 +162,8 @@ export const TransactionsProvider = ({ children }) => {
       switchNetwork()
 
       const accounts = await ethereum.request({ method: "eth_requestAccounts", });
+      accountChanged(result[0]);
+
       setCurrentAccount(accounts[0]);
       window.location.reload();
     } catch (error) {
@@ -204,7 +209,7 @@ export const TransactionsProvider = ({ children }) => {
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/account");
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
         const data = await response.json();
         setReference_id(data.referralId);
       } catch (error) {
@@ -216,27 +221,49 @@ export const TransactionsProvider = ({ children }) => {
 
   console.log(referencs_id)
 
-  const createPayoutApi = async () => {
+  const handleTokenTxnChange = async () => {
     try {
-      const payoutData = {
-        currency: 'INR', // Adjust as needed
-        mode: 'IMPS', // Mode of transfer, e.g., IMPS, UPI, etc.
-        purpose: 'refund', // Adjust the purpose of the payout
-        queue_if_low_balance: true, // Queue if balance is low
-        randomId: referencs_id, // Reference ID matching in the DB
-        narration: 'Acme Corp Fund Transfer', // Optional narration
-      };
-  
-      const response = await axios.post('http://localhost:5000/create-payout', payoutData);
+      const response = await fetch('https://cryptowallet-2.onrender.com/storeTokenTxn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          tokenTxn: TokenTxn,
+        }),
+      });
       
-      console.log('Payout successful:', response.data);
-      alert('Payout created successfully!');
-      setPayment(true)
+      const data = await response.json();
+      console.log(data.message);
     } catch (error) {
-      console.error('Error creating payout:', error.response?.data || error.message);
-      alert('Failed to create payout. Please try again.');
+      console.error('Error storing TokenTxn:', error);
     }
+    
+    setTokenTxn((prev) => !prev);
   };
+
+  // const createPayoutApi = async () => {
+  //   try {
+  //     const payoutData = {
+  //       currency: 'INR', // Adjust as needed
+  //       mode: 'IMPS', // Mode of transfer, e.g., IMPS, UPI, etc.
+  //       purpose: 'refund', // Adjust the purpose of the payout
+  //       queue_if_low_balance: true, // Queue if balance is low
+  //       randomId: referencs_id, // Reference ID matching in the DB
+  //       narration: 'Acme Corp Fund Transfer', // Optional narration
+  //     };
+  
+  //     const response = await axios.post('http://localhost:5000/create-payout', payoutData);
+      
+  //     console.log('Payout successful:', response.data);
+  //     alert('Payout created successfully!');
+  //     setPayment(true)
+  //   } catch (error) {
+  //     console.error('Error creating payout:', error.response?.data || error.message);
+  //     alert('Failed to create payout. Please try again.');
+  //   }
+  // };
   
  
   // const sendTransactions = async () => {
@@ -304,6 +331,30 @@ export const TransactionsProvider = ({ children }) => {
     }
   }
 
+  const accountChanged = (accountName) => {
+    getUserBalance(accountName);    // Get balance after setting the account
+  };
+
+  const getUserBalance = async (accountAddress) => {
+    try {
+      const balance = await window.ethereum.request({
+        method: "eth_getBalance",
+        params: [accountAddress, "latest"],
+      });
+      const balanceInEth = ethers.utils.formatEther(balance);
+
+      if (Number(balance) <= ethers.utils.parseEther("5000")) {
+        SetCheckBalance(true)
+        navigate("/userDetails"); 
+      } else {
+        alert("Insufficient balance. You need at least 5000 wei to proceed."); 
+        toast("Insufficient Balance! You need 5000 wei to proceed.");
+      }
+    } catch (error) {
+      setErrorMessage("Failed to fetch balance. Please try again.");
+    }
+  };
+
   const sendTransaction = async () => {
     try {
       if (ethereum) {
@@ -333,9 +384,10 @@ export const TransactionsProvider = ({ children }) => {
         console.log(`Loading - ${transactionHash1.hash}`);
         await transactionHash1.wait();
         setTokenTxn(true)
+        await handleTokenTxnChange();
         console.log(`Success - ${transactionHash1.hash}`);
 
-        if(TokenTxn) await createPayoutApi()
+        // if(TokenTxn) await createPayoutApi()
 
         console.log("Tokens sent and ₹1000 payout made to the referrer.");
 
@@ -368,6 +420,7 @@ export const TransactionsProvider = ({ children }) => {
         currentAccount,
         isLoading,
         payment,
+        checkBalance,
         sendTransaction,
         handleChange,
         formData,
