@@ -2,6 +2,7 @@ import React from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
 import { AiOutlineClose } from "react-icons/ai";
 import { Link } from "react-router-dom";
+import logo from '../../images/logo.png'
 
 const NavBarItem = ({ title, href, classprops }) => (
   <li className={`mx-4 cursor-pointer ${classprops}`}>
@@ -14,9 +15,12 @@ const Navbar = () => {
 
   return (
     <nav className="w-full flex md:justify-center justify-between items-center p-4">
-      <div className="md:flex-[0.5] flex-initial justify-center items-center">
-        <h3>ClimateCrew</h3>
-      </div>
+      <div className="md:flex-[0.5] flex flex-row items-center justify-center mr-[150px]">
+  <img src={logo} alt="ClimateCrew Logo" className="w-[120px] h-[140px] object-contain mr-2 rounded-full mr-2" />
+  <h3>ClimateCrew</h3>
+</div>
+
+
       <ul className="text-white md:flex hidden list-none flex-row justify-between items-center flex-initial">
         {[
           { title: "About Us", href: "#aboutus" },
