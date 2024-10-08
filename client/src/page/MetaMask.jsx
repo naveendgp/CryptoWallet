@@ -17,7 +17,7 @@ const generateRandomId = (length) => {
 
 const MetaMask = () => {
   const [errorMessage, setErrorMessage] = useState(null);
-  const [defaultAccount, setDefaultAccount] = useState(null);  // Account state
+  const [defaultAccount, setDefaultAccount] = useState(null);  
   const [userBalance, setUserBalance] = useState(null);
   const [randomId, setRandomId] = useState('');
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const MetaMask = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ randomId: newId, Account: defaultAccount }),  // Send account too
+          body: JSON.stringify({ randomId: newId, Account: defaultAccount }), 
         });
   
         const data = await response.json();
@@ -44,9 +44,9 @@ const MetaMask = () => {
         if (!data.exists) {
           isUnique = true;
           setRandomId(newId);
-          sendRandomIdToBackend(newId);  // Send to backend once unique ID is generated
+          sendRandomIdToBackend(newId);  
         } else {
-          console.log(data.message);  // Handle case where ID or account already exists
+          console.log(data.message);  
         }
       } catch (error) {
         console.error("Error checking random ID:", error);
@@ -62,7 +62,7 @@ const MetaMask = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ randomId: id, Account: defaultAccount }),  // Send account
+        body: JSON.stringify({ randomId: id, Account: defaultAccount }),  
       });
 
       const data = await response.json();
@@ -81,7 +81,7 @@ const MetaMask = () => {
       window.ethereum
         .request({ method: "eth_requestAccounts" })
         .then((result) => {
-          accountChanged(result[0]); // Pass the first account directly
+          accountChanged(result[0]); 
         })
         .catch((err) => {
           setErrorMessage("Failed to connect wallet. Please try again.");
@@ -92,8 +92,8 @@ const MetaMask = () => {
   };
 
   const accountChanged = (accountName) => {
-    setDefaultAccount(accountName); // Set the default account
-    getUserBalance(accountName);    // Get balance after setting the account
+    setDefaultAccount(accountName);
+    getUserBalance(accountName);    
   };
 
   const getUserBalance = async (accountAddress) => {

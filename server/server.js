@@ -26,7 +26,7 @@ const randomIdSchema = new mongoose.Schema({
   randomId: { type: String, unique: true, required: true },
   // reference_id: { type: String, unique: true, required: true },
   account: { type: String, unique: true, required: true },  // Make account unique
-  //contact_id: { type: String, unique: true } Razorpay contact ID
+  contact_id: { type: String  },
   // funt_account_id: { type: String, unique: true },
   // payout_id: { type: String, unique: true },
   createdAt: { type: Date, default: Date.now },
@@ -74,7 +74,7 @@ app.post("/api/save-random-id", async (req, res) => {
   console.log('randomId,',req.body)
 
   try {
-    const newRandomId = new RandomId({ randomId, account: Account });
+    const newRandomId = new RandomId({ randomId, account: Account,contact_id:"123" });
     await newRandomId.save(); 
     res.json({ success: true, message: "Random ID saved successfully." });
   } catch (error) {
