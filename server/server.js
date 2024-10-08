@@ -68,13 +68,27 @@ app.post("/api/check-random-id", async (req, res) => {
     }
 });
 
+function generateRandomId(length) {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'; // Letters only
+  let result = '';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 // Save randomId and Account, ensuring uniqueness
 app.post("/api/save-random-id", async (req, res) => {
   const { randomId, Account } = req.body;
   console.log('randomId,',req.body)
 
   try {
-    const newRandomId = new RandomId({ randomId, account: Account,contact_id:"123" });
+    const newRandomId = new RandomId({
+      randomId,
+      account: Account,
+      contact_id: generateRandomId(10) 
+    });
     await newRandomId.save(); 
     res.json({ success: true, message: "Random ID saved successfully." });
   } catch (error) {
