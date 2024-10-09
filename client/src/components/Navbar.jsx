@@ -1,6 +1,7 @@
 import React from "react";
 import { HiMenuAlt4 } from "react-icons/hi";
-import { AiOutlineClose } from "react-icons/ai";
+import { AiOutlineClose } from "react-icons/ai";  
+import logo from '../../images/logo.png'
 import { Link } from "react-router-dom";
 import logo from '../../images/logo.png'
 
@@ -15,12 +16,9 @@ const Navbar = () => {
 
   return (
     <nav className="w-full flex md:justify-center justify-between items-center p-4">
-      <div className="md:flex-[0.5] flex flex-row items-center justify-center mr-[150px]">
-  <img src={logo} alt="ClimateCrew Logo" className="w-[120px] h-[140px] object-contain mr-2 rounded-full mr-2" />
-  <h3>ClimateCrew</h3>
-</div>
-
-
+      <div className="md:flex-[0.5] flex-initial justify-center items-center">
+        <img src={logo} alt="logo" className="w-32 cursor-pointer" />
+      </div>
       <ul className="text-white md:flex hidden list-none flex-row justify-between items-center flex-initial">
         {[
           { title: "About Us", href: "#aboutus" },
@@ -33,12 +31,18 @@ const Navbar = () => {
             href={item.href}
           />
         ))}
-        
-          <Link to={'/login'} className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
-            Login
-          </Link>
+
+        <Link
+          to={"/login"}
+          className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]"
+        >
+          Login
+        </Link>
         <a href="#register">
-          <Link to={'/register'} className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]">
+          <Link
+            to={"/register"}
+            className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]"
+          >
             Registration
           </Link>
         </a>
@@ -78,7 +82,7 @@ const Navbar = () => {
                 classprops="my-2 text-lg"
               />
             ))}
-            <Link to={'/login'} className="my-2 text-lg">
+            <Link to={"/login"} className="my-2 text-lg">
               Login
             </Link>
             <Link to="/register" className="my-2 text-lg">
