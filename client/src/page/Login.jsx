@@ -68,7 +68,7 @@ const Login = () => {
           <div className="mt-4 flex flex-col md:flex-row justify-center">
             <input
               type="text"
-              placeholder="Enter ID or KSN wallet"
+              placeholder="Enter ID "
               style={{ color: "white" }}
               onChange={(e) => setUserReference_id(e.target.value)} 
               className="p-2 rounded-t-lg md:rounded-l-lg md:rounded-r-none border border-gray-600 bg-black text-white w-full md:w-auto"

@@ -157,21 +157,42 @@ export const TransactionsProvider = ({ children }) => {
 
   const connectWallet = async () => {
     try {
-      if (!ethereum) return alert("Please install MetaMask.");
+      // Check if MetaMask is installed (either on desktop or mobile)
+      const { ethereum } = window;
 
-      switchNetwork()
+      if (!ethereum) {
+        // Check if on a mobile device
+        if (window.innerWidth <= 768) {
+          // Direct mobile users to the MetaMask app
+          const dappUrl = "climatecrew.info"; // Your dApp URL without 'https://'
+          const metamaskAppDeepLink = `https://metamask.app.link/dapp/${dappUrl}`;
+          window.open(metamaskAppDeepLink, "_blank");
+        } else {
+          alert("Please install MetaMask.");
+        }
+        return;
+      }
 
-      const accounts = await ethereum.request({ method: "eth_requestAccounts", });
-      accountChanged(result[0]);
+      // If MetaMask is installed, proceed to connect the wallet
+      switchNetwork();
+
+      const accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      // Handle account change (especially useful if users switch accounts)
+      accountChanged(accounts[0]);
 
       setCurrentAccount(accounts[0]);
+
+      // Optionally reload the page after connecting the wallet
       window.location.reload();
     } catch (error) {
       console.log(error);
-
       throw new Error("No ethereum object");
     }
   };
+
 
 //  const TrustWallet = async () => {
 //    try {

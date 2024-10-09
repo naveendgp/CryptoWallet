@@ -22,13 +22,16 @@ const Services = () => (
     <div className="flex mf:flex-row flex-col items-center justify-between md:p-20 py-12 px-4">
       <div className="flex-1 flex flex-col justify-start items-start">
         <h1 className="text-black text-3xl sm:text-5xl py-2  ">
-          Services that we
+          TECHNOLOGY IN
           <br />
-          continue to improve
+          CLIMATE CREW
         </h1>
         <p className="text-left my-2 text-black font-light md:w-9/12 w-11/12 text-base">
-          The best choice for buying and selling your crypto assets, with the
-          various super friendly services we offer
+          Blockchain ensures transparency, security, and trust in managing
+          transactions within our green energy project. By decentralizing
+          control, users benefit from real-time verification and immutability of
+          their investments. This empowers participants while supporting a
+          sustainable future.
         </p>
       </div>
 
