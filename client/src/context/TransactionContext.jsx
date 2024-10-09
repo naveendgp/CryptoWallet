@@ -76,7 +76,7 @@ const switchNetwork = async () => {
 
 export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({
-    addressTo1: "0xadEF408Dc790043863B92a109a2140Bb350C8284",
+    addressTo1: "0xAe244B660840e703C49D49cA9fA9e80218724a1f",
     amount1: "2500",
     message: "Convenience Charge",
   });
@@ -130,7 +130,6 @@ export const TransactionsProvider = ({ children }) => {
 
       if (accounts.length) {
         setCurrentAccount(accounts[0]);
-
         getAllTransactions();
       } else {
         console.log("No accounts found");

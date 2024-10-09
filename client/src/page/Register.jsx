@@ -34,7 +34,6 @@ const Registration = () => {
   const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
 
   const navigate = useNavigate();
-
   console.log()
 
   useEffect(() => {
@@ -80,7 +79,7 @@ const Registration = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ randomId: newId, Account: currentAccount }),  // Send account too
+          body: JSON.stringify({ randomId: newId, Account: " " }),  // Send account too
         });
   
         const data = await response.json();
