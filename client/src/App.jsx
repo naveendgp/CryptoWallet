@@ -7,6 +7,7 @@ import MetaMask from './page/MetaMask.jsx';
 import DashBoard from './page/DashBoard.jsx'
 import UserDetails from './page/UserDetails.jsx';
 import ConnectMobile from './components/ConnectMobile.jsx';
+import LoginDashBoard from './page/LoginDashBoard.jsx';
 function App() {
     return (
         <>
@@ -19,6 +20,7 @@ function App() {
                 <Route path='/dashboard' element={<DashBoard/>}/>
                 <Route path='/userDetails' element={<UserDetails/>}/>
                 <Route path='/app' element={<ConnectMobile/>}/>
+                <Route path='/logindashboard' element={<LoginDashBoard/>}/>
             </Routes>
         </BrowserRouter>
         </>

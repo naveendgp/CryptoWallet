@@ -77,7 +77,7 @@ const switchNetwork = async () => {
 export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({
     addressTo1: "0xAe244B660840e703C49D49cA9fA9e80218724a1f",
-    amount1: "2500",
+    amount1: "200",
     message: "Convenience Charge",
   });
   const [currentAccount, setCurrentAccount] = useState("");
