@@ -42,7 +42,7 @@ const DashBoard = () => {
       try {
         setAccount(currentAccount);
         
-        const response = await axios.get("http://localhost:5000/api/getDetails", {
+        const response = await axios.get("https://cryptowallet-2.onrender.com/api/getDetails", {
           params: { randomId }, // Pass randomId as query parameters
         });
   

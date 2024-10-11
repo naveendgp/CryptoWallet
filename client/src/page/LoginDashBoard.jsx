@@ -29,7 +29,7 @@ const LoginDashBoard = () => {
       try {
         setAccount(currentAccount);
   
-        const response = await fetch(`http://localhost:5000/api/getDetails?randomId=${randomId}`); // Use fetch
+        const response = await fetch(`https://cryptowallet-2.onrender.com/api/getDetails?randomId=${randomId}`); // Use fetch
   
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

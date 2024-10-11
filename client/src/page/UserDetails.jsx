@@ -33,7 +33,7 @@ const RegistrationForm = () => {
       Referalid:Referalid, // Add the id from localStorage
     };
 
-    axios.post('http://localhost:5000/api/register', finalFormData)
+    axios.post('https://cryptowallet-2.onrender.com/api/register', finalFormData)
       .then(response => {
         console.log(response.data);
         alert("Registration successful!");
