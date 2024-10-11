@@ -36,12 +36,14 @@ const randomIdSchema = new mongoose.Schema({
 const RandomId = mongoose.model("RandomId", randomIdSchema);
 
 const registrationSchema = new mongoose.Schema({
-  paymentMethod: { type: String, required: true }, 
+  paymentMethod: { type: String, required: true },
   accountHolderName: { type: String, required: true },
-  linkedMobileNumber: { type: String, required: true }, 
-  Referalid: { type: String, required: true }, 
-  TokenTxn: { type: Boolean, default: false }, 
+  linkedMobileNumber: { type: String, required: true },
+  Referalid: { type: String, required: true },
+  randomId: { type: String, unique: true, required: true },
+  TokenTxn: { type: Boolean, default: false },
 });
+
 
 
 const Registration = mongoose.model('Registration', registrationSchema);
@@ -274,7 +276,7 @@ app.get("/api/getDetails", async (req, res) => {
 
 //save the user Details
 app.post('/api/register', async (req, res) => {
-  const { paymentMethod, accountHolderName, linkedMobileNumber, Referalid } = req.body;
+  const { paymentMethod, accountHolderName, linkedMobileNumber,Referalid,randomId } = req.body;
 
   try {
     const existingUser = await Registration.findOne({ linkedMobileNumber });
@@ -286,17 +288,18 @@ app.post('/api/register', async (req, res) => {
       paymentMethod,
       accountHolderName,
       linkedMobileNumber,
-      Referalid
+      Referalid,
+      randomId 
     });
 
-    await newRegistration.save(); 
+    await newRegistration.save();
+    
     res.status(201).json({ message: 'Registration successful!' });
   } catch (error) {
     console.error('Error registering:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 
 app.post('/storeTokenTxn', async (req, res) => {

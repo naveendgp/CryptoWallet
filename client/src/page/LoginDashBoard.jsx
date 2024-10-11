@@ -107,11 +107,12 @@ const LoginDashBoard = () => {
 
         {/* New Table */}
         <div className="mt-6">
-          <h3 className="text-lg font-bold mb-2">User Status</h3>
+          <h3 className="text-lg font-bold mb-2">Referral Status</h3>
           <table className="table-auto w-full text-left text-sm">
             <thead>
               <tr>
                 <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">RandomId</th>
                 <th className="px-4 py-2">Status</th>
               </tr>
             </thead>
@@ -119,6 +120,7 @@ const LoginDashBoard = () => {
                 {tableData.map((row, index) => (
                   <tr key={index}>
                     <td className="border px-4 py-2">{row.name}</td>
+                    <td className="border px-4 py-2">{row.randomId}</td>
                     <td className="border px-4 py-2">
                       <input
                         type="checkbox"

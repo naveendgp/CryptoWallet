@@ -108,7 +108,7 @@ const Registration = () => {
         if (!data.exists) {
           isUnique = true;
           setRandomId(newId);
-          localStorage.setItem('randomId',randomId);
+          localStorage.setItem('randomId',newId);
           sendRandomIdToBackend(newId);  // Send to backend once unique ID is generated
         } else {
           console.log(data.message);  // Handle case where ID or account already exists

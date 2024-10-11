@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -7,6 +7,9 @@ const RegistrationForm = () => {
     paymentMethod: "",
     accountHolderName: "",
     linkedMobileNumber: "",
+    name: "", // New field for name
+    email: "", // New field for email
+    mobileNumber: "", // New field for mobile number
   });
   const navigate = useNavigate();
 
@@ -18,19 +21,15 @@ const RegistrationForm = () => {
     });
   };
 
- 
-    
-
-
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the default form submission behavior
-    const random = localStorage.getItem('randomId');
     const Referalid = localStorage.getItem('ReferalId');
-
+    const randomId = localStorage.getItem("randomId")
 
     const finalFormData = {
       ...formData,
-      Referalid:Referalid, // Add the id from localStorage
+      Referalid, // Add the ReferalId from localStorage
+      randomId
     };
 
     axios.post('https://cryptowallet-2.onrender.com/api/register', finalFormData)
@@ -56,58 +55,117 @@ const RegistrationForm = () => {
           User Details
         </h2>
         <form onSubmit={handleSubmit}>
-          {/* Dropdown for Payment Method */}
-          <div className="mb-6">
-            <label className="block text-white-700 font-semibold mb-2" htmlFor="paymentMethod">
-              Select Payment Method
-            </label>
-            <select
-              id="paymentMethod"
-              name="paymentMethod"
-              value={formData.paymentMethod}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">Choose a payment method</option>
-              <option value="GPAY">GPAY</option>
-              <option value="PHONEPE">PHONEPE</option>
-              <option value="PAYTM">PAYTM</option>
-            </select>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left Column */}
+            <div>
+              {/* Dropdown for Payment Method */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="paymentMethod">
+                  Select Payment Method
+                </label>
+                <select
+                  id="paymentMethod"
+                  name="paymentMethod"
+                  value={formData.paymentMethod}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <option value="">Choose a payment method</option>
+                  <option value="GPAY">GPAY</option>
+                  <option value="PHONEPE">PHONEPE</option>
+                  <option value="PAYTM">PAYTM</option>
+                </select>
+              </div>
 
-          {/* Account Holder Name */}
-          <div className="mb-6">
-            <label className="block text-white-700 font-semibold mb-2" htmlFor="accountHolderName">
-              Account Holder Name
-            </label>
-            <input
-              type="text"
-              id="accountHolderName"
-              name="accountHolderName"
-              value={formData.accountHolderName}
-              onChange={handleChange}
-              required
-              placeholder="Enter your account holder name"
-              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
+              {/* Account Holder Name */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="accountHolderName">
+                  Account Holder Name
+                </label>
+                <input
+                  type="text"
+                  id="accountHolderName"
+                  name="accountHolderName"
+                  value={formData.accountHolderName}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your account holder name"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
 
-          {/* Linked Mobile Number */}
-          <div className="mb-6">
-            <label className="block text-white-700 font-semibold mb-2" htmlFor="linkedMobileNumber">
-              Linked Mobile Number
-            </label>
-            <input
-              type="text"
-              id="linkedMobileNumber"
-              name="linkedMobileNumber"
-              value={formData.linkedMobileNumber}
-              onChange={handleChange}
-              required
-              placeholder="Enter your linked mobile number"
-              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+              {/* Linked Mobile Number */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="linkedMobileNumber">
+                  Linked Mobile Number
+                </label>
+                <input
+                  type="text"
+                  id="linkedMobileNumber"
+                  name="linkedMobileNumber"
+                  value={formData.linkedMobileNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your linked mobile number"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div>
+              {/* Name */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="name">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Email */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="email">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Mobile Number */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="mobileNumber">
+                  Mobile Number
+                </label>
+                <input
+                  type="text"
+                  id="mobileNumber"
+                  name="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your mobile number"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="flex justify-center items-center">

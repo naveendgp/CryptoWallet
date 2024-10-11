@@ -17,61 +17,61 @@ const createEthereumContract = () => {
   return transactionsContract;
 };
 
-const switchNetwork = async () => {
-  try {
-    if (!window.ethereum) throw new Error("MetaMask is not installed");
+// const switchNetwork = async () => {
+//   try {
+//     if (!window.ethereum) throw new Error("MetaMask is not installed");
 
-    // Binance Smart Chain Mainnet Configuration
-    const bscMainnet = {
-      chainId: "0x38", // 56 in decimal
-      chainName: "Binance Smart Chain Mainnet",
-      nativeCurrency: {
-        name: "Binance Coin",
-        symbol: "BNB",
-        decimals: 18,
-      },
-      rpcUrls: ["https://bsc-dataseed.binance.org/"],
-      blockExplorerUrls: ["https://bscscan.com/"],
-    };
+//     // Binance Smart Chain Mainnet Configuration
+//     const bscMainnet = {
+//       chainId: "0x38", // 56 in decimal
+//       chainName: "Binance Smart Chain Mainnet",
+//       nativeCurrency: {
+//         name: "Binance Coin",
+//         symbol: "BNB",
+//         decimals: 18,
+//       },
+//       rpcUrls: ["https://bsc-dataseed.binance.org/"],
+//       blockExplorerUrls: ["https://bscscan.com/"],
+//     };
 
-    // Check if MetaMask is already connected to Binance Smart Chain Mainnet
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: bscMainnet.chainId }],
-    });
+//     // Check if MetaMask is already connected to Binance Smart Chain Mainnet
+//     await window.ethereum.request({
+//       method: "wallet_switchEthereumChain",
+//       params: [{ chainId: bscMainnet.chainId }],
+//     });
 
-    console.log("Switched to Binance Smart Chain");
-  } catch (error) {
-    // If the network is not added to MetaMask, add it
-    if (error.code === 4902) {
-      try {
-        const bscMainnet = {
-          chainId: "0x38", // 56 in decimal
-          chainName: "Binance Smart Chain Mainnet",
-          nativeCurrency: {
-            name: "Binance Coin",
-            symbol: "BNB",
-            decimals: 18,
-          },
-          rpcUrls: ["https://bsc-dataseed.binance.org/"],
-          blockExplorerUrls: ["https://bscscan.com/"],
-        };
+//     console.log("Switched to Binance Smart Chain");
+//   } catch (error) {
+//     // If the network is not added to MetaMask, add it
+//     if (error.code === 4902) {
+//       try {
+//         const bscMainnet = {
+//           chainId: "0x38", // 56 in decimal
+//           chainName: "Binance Smart Chain Mainnet",
+//           nativeCurrency: {
+//             name: "Binance Coin",
+//             symbol: "BNB",
+//             decimals: 18,
+//           },
+//           rpcUrls: ["https://bsc-dataseed.binance.org/"],
+//           blockExplorerUrls: ["https://bscscan.com/"],
+//         };
 
-        // Add Binance Smart Chain Mainnet to MetaMask
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [bscMainnet],
-        });
+//         // Add Binance Smart Chain Mainnet to MetaMask
+//         await window.ethereum.request({
+//           method: "wallet_addEthereumChain",
+//           params: [bscMainnet],
+//         });
 
-        console.log("Binance Smart Chain added and switched");
-      } catch (addError) {
-        console.error("Failed to add Binance Smart Chain", addError);
-      }
-    } else {
-      console.error("Failed to switch network", error);
-    }
-  }
-};
+//         console.log("Binance Smart Chain added and switched");
+//       } catch (addError) {
+//         console.error("Failed to add Binance Smart Chain", addError);
+//       }
+//     } else {
+//       console.error("Failed to switch network", error);
+//     }
+//   }
+// };
 
 
 export const TransactionsProvider = ({ children }) => {
@@ -173,7 +173,7 @@ export const TransactionsProvider = ({ children }) => {
       }
 
       // If MetaMask is installed, proceed to connect the wallet
-      switchNetwork();
+      // switchNetwork();
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
