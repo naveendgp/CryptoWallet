@@ -53,20 +53,33 @@ const Registration = mongoose.model('Registration', registrationSchema);
 
 // Check if the randomId or Account already exists
 app.post("/api/check-random-id", async (req, res) => {
-    const { randomId, Account } = req.body;
-  
-    try {
-      const existingId = await RandomId.findOne({ $or: [{ randomId }, { account: Account }] });
-  
-      if (existingId) {
-        res.json({ exists: true, message: 'ID or account already exists.' });
-      } else {
-        res.json({ exists: false });  
-      }
-    } catch (error) {
-      console.error("Error checking random ID:", error);
-      res.status(500).json({ success: false, message: "Error checking random ID." });
+  const { randomId, Account } = req.body;
+
+  try {
+    // Check if randomId or account exists
+    const existingRecord = await Registration.findOne({
+      $or: [{ randomId }, { account: Account }]
+    });
+
+    if (existingRecord) {
+      res.json({
+        exists: true,
+        randomId: existingRecord.randomId,
+        TokenTxn: existingRecord.TokenTxn,
+        message: 'ID or account already exists.'
+      });
+    } else {
+      res.json({
+        exists: false,
+        randomId,
+        TokenTxn: false, 
+        message: 'ID or account does not exist.'
+      });
     }
+  } catch (error) {
+    console.error("Error checking random ID:", error);
+    res.status(500).json({ success: false, message: "Error checking random ID." });
+  }
 });
 
 function generateRandomId(length) {

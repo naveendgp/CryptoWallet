@@ -17,7 +17,7 @@ const Login = () => {
     // Fetch the total registrations from the API when the component mounts
     const fetchTotalRegistrations = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/total-registrations");
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/total-registrations");
         const data = await response.json();
         setTotalRegistrations(data.total); // Update state with the total count
       } catch (error) {
@@ -135,7 +135,7 @@ const Login = () => {
               <div className="flex justify-between items-center">
                 <span>The Climate Crew Contracts</span>
                 <span className="text-xs">
-                0xa06D78837e5dFBd09C5Be990832C5d3f13a604c1 <FaCopy />
+                0x1745b15289C7cf31d6FC250b817cd6f0C55F352e <FaCopy />
                 </span>
               </div>
               <div className="flex justify-between items-center mt-2">

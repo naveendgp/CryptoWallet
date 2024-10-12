@@ -31,6 +31,7 @@ const Registration = () => {
   const [sponsoar, setSponsoar] = useState(false);
   const [wallet,setWallet] = useState(false);
   const [alertShown, setAlertShown] = useState(false);  
+  const [tokenTxn,setTokenTxn] = useState(false);
 
   const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const Registration = () => {
   }, []);
 
   const handleRegister = () => {
-    if (userReference_id.trim() === reference_id.trim()) {
+    if (tokenTxn && userReference_id.trim() === reference_id.trim()) {
       handleGenerate();
       navigate("/userDetails");
     }
@@ -58,35 +59,45 @@ const Registration = () => {
   };
 
   const handleCheck = async () => {
-      try {
-        const response = await fetch("https://cryptowallet-2.onrender.com/api/check-random-id", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ randomId: userReference_id.trim(), Account: " " }),  // Send account too
-        });
-
-        const data = await response.json();
-        console.log("data",data);
-
-        if (data.exists) {
-          setReference_id(userReference_id.trim());
-        } 
-
-        if (userReference_id.trim() === reference_id.trim()) {
-          setSponsoar(true);  
-        } 
-
-        if (!alertShown) {
-          alert("Please click the button");
-          setAlertShown(true);  
+    try {
+      const response = await fetch("http://localhost:5000/api/check-random-id", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ randomId: userReference_id.trim(), Account: " " }),  // Send account too
+      });
+  
+      const data = await response.json();
+      console.log("data", data);
+  
+      // If the randomId or Account exists
+      if (data.exists) {
+        setReference_id(userReference_id.trim());
+  
+        // Set state for TokenTxn value from response
+        setTokenTxn(data.TokenTxn); // Set TokenTxn state
+  
+        // Check if the randomId matches the reference_id
+        if (tokenTxn && userReference_id.trim() === reference_id.trim()) {
+          setSponsoar(true);
         }
-        
-      } catch (error) {
-        console.error("Error checking random ID:", error);
+      } else {
+        // Handle case where ID or Account does not exist (optional logic)
+        setTokenTxn(false); // Set TokenTxn state to false if no record exists
       }
+  
+      // Show alert if not already shown
+      if (!alertShown) {
+        alert("Please click the button");
+        setAlertShown(true);
+      }
+  
+    } catch (error) {
+      console.error("Error checking random ID:", error);
+    }
   };
+  
 
   const handleChangeInput = (e) => {
     const value = e.target.value;

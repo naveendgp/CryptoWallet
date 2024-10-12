@@ -91,7 +91,7 @@ const LoginDashBoard = () => {
         {/* Token Info */}
         <div className="bg-blue-500 p-4 rounded-lg flex items-center justify-between">
           <span className="text-white">TEMZ/BNB</span>
-          <span className="text-lg font-bold">0.0538 USDT</span>
+          <span className="text-lg font-bold">60 USD</span>
         </div>
 
         {/* Send Tokens Button */}
