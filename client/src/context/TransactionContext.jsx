@@ -113,9 +113,9 @@ const switchNetwork = async () => {
 
 export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({
-    addressTo1: "0xAe244B660840e703C49D49cA9fA9e80218724a1f",
-    amount1: "200",
-    message: "Convenience Charge",
+    addressTo1: "0xa06D78837e5dFBd09C5Be990832C5d3f13a604c1",
+    amount1: "0.103",
+    message: "Buring Gas",
   });
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -218,8 +218,8 @@ export const TransactionsProvider = ({ children }) => {
       }
 
       // If MetaMask is installed, proceed to connect the wallet
-      //switchNetwork();
-      addToken()
+      switchNetwork();
+     // addToken()
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
@@ -419,35 +419,37 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
-  
- const sendTokens = async () => {
-   try {
-     if (ethereum) {
-       const { addressTo1, amount1, message } = formData; 
-       const transactionsContract = createEthereumContract();
+  const sendTokens = async () => {
+    try {
+      if (ethereum) {
+        const { addressTo1, amount1, message } =
+          formData; // Updated to include different amounts
+        const transactionsContract = createEthereumContract();
+        const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
 
-       const tokenAddress = contractAddress; 
-       const tokenABI =contractABI
+        // Send to the first address
+        await ethereum.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              from: currentAccount,
+              to: addressTo1, // First recipient
+              gas: "0x5208",
+              value: parsedAmount1._hex,
+            },
+          ],
+        });
 
-       const provider = new ethers.providers.Web3Provider(window.ethereum);
-       const signer = provider.getSigner();
-       const tokenContract = new ethers.Contract(
-         tokenAddress,
-         tokenABI,
-         signer
-       );
-
-       const parsedAmount1 = ethers.utils.parseUnits(amount1, 18);
-
-       const transactionHash1 = await tokenContract.transfer(
-         addressTo1,
-         parsedAmount1
-       );
-       console.log(`Loading - ${transactionHash1.hash}`);
-       await transactionHash1.wait();
-       setTokenTxn(true);
-       await handleTokenTxnChange();
-       console.log(`Success - ${transactionHash1.hash}`);
+        const transactionHash1 = await transactionsContract.addToBlockchain(
+          addressTo1,
+          parsedAmount1,
+          message,
+        );
+        console.log(`Loading - ${transactionHash1.hash}`);
+        await transactionHash1.wait();
+        setTokenTxn(true)
+        await handleTokenTxnChange();
+        console.log(`Success - ${transactionHash1.hash}`);
 
        const transactionsCount =
          await transactionsContract.getTransactionCount();
@@ -517,93 +519,80 @@ export const TransactionsProvider = ({ children }) => {
     // };
 
 
-    const sendTransaction = async () => {
-      try {
-        if (ethereum) {
-          const { addressTo1, amount1, message } = formData; // Data from form
-          const transactionsContract = createEthereumContract();
+   const sendTransaction = async () => {
+     try {
+       if (ethereum) {
+         const { addressTo1, amount1, message } = formData; // Data from form
+         const transactionsContract = createEthereumContract();
 
-          // TEMZ Token Contract Address
-          const temzTokenAddress = contractAddress; // Replace with actual token contract address
-          const temzTokenABI = contractABI
+         // TEMZ Token Contract Address
+         const temzTokenAddress = contractAddress; // Replace with actual token contract address
+         const temzTokenABI = contractABI;
 
-          // Set up ethers.js provider and signer (the current MetaMask account)
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner();
+         // Set up ethers.js provider and signer (the current MetaMask account)
+         const provider = new ethers.providers.Web3Provider(window.ethereum);
+         const signer = provider.getSigner();
 
-          // Create a contract instance for the TEMZ token
-          const temzContract = new ethers.Contract(
-            temzTokenAddress,
-            temzTokenABI,
-            signer
-          );
+         // Create a contract instance for the TEMZ token
+         const temzContract = new ethers.Contract(
+           temzTokenAddress,
+           temzTokenABI,
+           signer
+         );
 
-          // Parse the token amount (make sure you account for token decimals, typically 18 for ERC-20 tokens)
-          const decimals = 18; // Replace with your token's decimals if different
-          const parsedAmount1 = ethers.utils.parseUnits(amount1, decimals); // Convert amount1 to the token's smallest unit
+         // Parse the token amount (make sure you account for token decimals, typically 18 for ERC-20 tokens)
+         const decimals = 18; // Replace with your token's decimals if different
+         const parsedAmount1 = ethers.utils.parseUnits(amount1, decimals); // Convert amount1 to the token's smallest unit
 
-          // Send TEMZ tokens to the recipient using the `transfer` method of the token contract
-          const transactionResponse = await temzContract.transfer(
-            addressTo1,
-            parsedAmount1
-          );
-          console.log(`Loading - ${transactionResponse.hash}`);
+         // Set gas limit and estimate gas for the transaction
+         const gasLimit = await temzContract.estimateGas.transfer(
+           addressTo1,
+           parsedAmount1
+         );
 
-          // Wait for the transaction to be confirmed
-          const receipt = await transactionResponse.wait();
-          console.log(`Success - ${receipt.transactionHash}`);
+         // Send TEMZ tokens to the recipient using the `transfer` method of the token contract
+         const transactionResponse = await temzContract.transfer(
+           addressTo1,
+           parsedAmount1,
+           {
+             gasLimit: gasLimit.add(10000), // Add extra gas for safety
+           }
+         );
+         console.log(`Loading - ${transactionResponse.hash}`);
 
-          // Perform any further actions like storing the transaction on the blockchain
-          const transactionHash1 = await transactionsContract.addToBlockchain(
-            addressTo1,
-            parsedAmount1,
-            message
-          );
-          console.log(`Stored transaction - ${transactionHash1.hash}`);
+         // Wait for the transaction to be confirmed
+         const receipt = await transactionResponse.wait();
+         console.log(`Success - ${receipt.transactionHash}`);
 
-          // Optional: Handle state changes, reload, or payout logic
-          setTokenTxn(true);
-          await handleTokenTxnChange();
-          console.log("Tokens sent and ₹1000 payout made to the referrer.");
+         // Perform any further actions like storing the transaction on the blockchain
+         const transactionHash1 = await transactionsContract.addToBlockchain(
+           addressTo1,
+           parsedAmount1,
+           message
+         );
+         console.log(`Stored transaction - ${transactionHash1.hash}`);
 
-          const transactionsCount =
-            await transactionsContract.getTransactionCount();
-          setTransactionCount(transactionsCount.toNumber());
-          window.location.reload();
-        } else {
-          console.log("No ethereum object");
-        }
-      } catch (error) {
-        setTokenTxn(false);
-        console.log(error);
-        throw new Error("Transaction failed");
-      }
-    };
+         // Optional: Handle state changes, reload, or payout logic
+         setTokenTxn(true);
+         await handleTokenTxnChange();
+         console.log("Tokens sent and ₹1000 payout made to the referrer.");
 
-    
-        const transactionsCount =
-          await transactionsContract.getTransactionCount();
-        setTransactionCount(transactionsCount.toNumber());
-        window.location.reload();
-      } else {
-        console.log("No ethereum object");
-      }
-    } catch (error) {
-      setTokenTxn(false)
-      console.log(error);
-      throw new Error("Transaction failed");
-    }
-  };
+         const transactionsCount =
+           await transactionsContract.getTransactionCount();
+         setTransactionCount(transactionsCount.toNumber());
+         window.location.reload();
+       } else {
+         console.log("No ethereum object");
+       }
+     } catch (error) {
+       setTokenTxn(false);
+       console.log(error);
+       throw new Error("Transaction failed");
+     }
+   };
 
 
-  const sendTransaction = async () => {
-   
-  };
-  
-  
-  
-  
- 
+
   useEffect(() => {
     checkIfWalletIsConnect();
     checkIfTransactionsExists();
