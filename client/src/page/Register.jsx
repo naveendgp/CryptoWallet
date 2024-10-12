@@ -1,15 +1,13 @@
-import React, { useState,useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./Register.css"; // Assume you have some default styles in this CSS file
 import { Link } from "react-router-dom";
 import { FaTimesCircle } from "react-icons/fa"; // Importing FontAwesome Icons
 import { useNavigate } from "react-router-dom";
+import { TiTickOutline } from "react-icons/ti";
 import { TransactionContext } from "../context/TransactionContext";
 
-
-
 const generateRandomId = (length) => {
-  const characters =
-    "ABCDEFGHIJabcdefghij0123456789";
+  const characters = "0123456789";
   let result = "";
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
@@ -27,43 +25,67 @@ const Registration = () => {
   const [defaultAccount, setDefaultAccount] = useState(null);  // Account state
   const [userBalance, setUserBalance] = useState(null);
   const [randomId, setRandomId] = useState('');
-  const [address , setAddress ] = useState(false);
-  const[userReference_id,setUserReference_id] = useState(" ");
-  const[reference_id,setReference_id] = useState("");
+  const [address, setAddress] = useState(false);
+  const [userReference_id, setUserReference_id] = useState(" ");
+  const [reference_id, setReference_id] = useState("");
+  const [sponsoar, setSponsoar] = useState(false);
+  const [wallet,setWallet] = useState(false);
 
   const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
-
   const navigate = useNavigate();
-  console.log()
 
+  
   useEffect(() => {
     const fetchAccountDetails = async () => {
-      try {
-        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
-        const data = await response.json();
-        setReference_id(data.referralId);
-      } catch (error) {
-        console.error("Error fetching account details:", error);
-      }
+      if(currentAccount)
+        {
+          console.log("hi",currentAccount);
+          setWallet(true)
+        }
     };
     fetchAccountDetails();
   }, []);
 
-  const handleRegister = () =>{
-
-    if(userReference_id.trim()==reference_id.trim())
-    {
-       handleGenerate()
-       navigate("/userDetails"); 
+  const handleRegister = () => {
+    if (userReference_id.trim() === reference_id.trim()) {
+      handleGenerate();
+      navigate("/userDetails");
     }
+  };
 
-  }
+  const handleCheck = async (id) => {
+      try {
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/check-random-id", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ randomId: id, Account: " " }),  // Send account too
+        });
 
+        const data = await response.json();
+        console.log("data",data);
 
-  localStorage.setItem('ReferalId',userReference_id);
-  
+        if (data.exists) {
+          setReference_id(id.trim());
+        } 
+      } catch (error) {
+        console.error("Error checking random ID:", error);
+      }
+  };
 
- 
+  const handleChangeInput = (e) => {
+    const value = e.target.value;
+    setUserReference_id(value)
+    localStorage.setItem('ReferalId',value);
+    console.log("user",value);
+    console.log("referrr",reference_id);
+    handleCheck(value);
+    if (value.trim() === reference_id.trim()) {
+      setSponsoar(true);  // Set sponsor status to true when matched
+    } 
+    
+  };
 
   const handleGenerate = async () => {
     let isUnique = false;
@@ -71,7 +93,6 @@ const Registration = () => {
 
     while (!isUnique) {
       newId = generateRandomId(10);
-      console.log("jj",newId)
 
       try {
         const response = await fetch("https://cryptowallet-2.onrender.com/api/check-random-id", {
@@ -81,12 +102,13 @@ const Registration = () => {
           },
           body: JSON.stringify({ randomId: newId, Account: " " }),  // Send account too
         });
-  
+
         const data = await response.json();
 
         if (!data.exists) {
           isUnique = true;
           setRandomId(newId);
+          localStorage.setItem('randomId',newId);
           sendRandomIdToBackend(newId);  // Send to backend once unique ID is generated
         } else {
           console.log(data.message);  // Handle case where ID or account already exists
@@ -119,11 +141,6 @@ const Registration = () => {
     }
   };
 
-
-
- 
-  
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gradient-bg-transactions">
       <div className="white-glassmorphism w-full max-w-md p-8">
@@ -137,46 +154,50 @@ const Registration = () => {
           type="text"
           placeholder="Sponsor ID"
           value={userReference_id}
-          onChange={(e) => setUserReference_id(e.target.value)} 
+          onChange={handleChangeInput}
           className="input-field mb-7 w-full py-3 px-3 bg-grey text-black rounded-md"
         />
 
-        {/* Error Messages with Red Cross Icons */}
-        <div className="text-red-500 mb-7">
-          <p className="flex items-center mb-3">
-            <FaTimesCircle className="mr-2" /> Sponsor ID: Sponsor Not Found
+        {/* Conditional Error or Success Messages */}
+        <div className={'mb-7 text-green-500 text-red-500'}>
+          <p className={`flex items-center mb-3 mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} >
+            <FaTimesCircle className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />
+            TemZ ID : {sponsoar ? 'member Found' : 'member Not Found'}
           </p>
-          <p className="flex items-center mb-3">
-            <FaTimesCircle className="mr-2" /> Wallet: not detected
+          <p className={`flex items-center mb-3 mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} >
+            <FaTimesCircle className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />
+            Registration : {sponsoar ? 'Available' : 'Not Available'}
           </p>
-          <p className="flex items-center mb-3">
-            <FaTimesCircle className="mr-2" /> Network:
+          <p className={`flex items-center mb-3 mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} >
+            {wallet? <TiTickOutline className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />:
+              <FaTimesCircle className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />}
+             Wallet :{wallet? ' Connecte' : 'Not connected'}
           </p>
-          <p className="flex items-center mb-3">
-            <FaTimesCircle className="mr-2" /> Registration: not available
+          <p className={`flex items-center mb-3 mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} >
+          {wallet? <TiTickOutline className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />:
+              <FaTimesCircle className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />}
+           Network : {wallet? 'BNB' : " "}
           </p>
-          <p className="flex items-center mb-3">
-            <FaTimesCircle className="mr-2" /> Balance: min 702.8112 Temz
+          <p className={`flex items-center mb-3 mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} >
+          {wallet? <TiTickOutline className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />:
+              <FaTimesCircle className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />}
+           Balance : 20
           </p>
           <p className="flex items-center mb-3">
             <FaTimesCircle className="mr-2" /> Approve Temz Required
           </p>
         </div>
 
-          {errorMessage && (
-            <h4 className="text-red-500 font-medium mt-4">{errorMessage}</h4>
-          )}
+        {errorMessage && (
+          <h4 className="text-red-500 font-medium mt-4">{errorMessage}</h4>
+        )}
 
-        {/* Buttons */}
+        {/* Register Button */}
         <div className="flex justify-center space-x-4">
-          
-         
           <button className="bg-[#2952e3] py-2 px-7 mx-4 rounded-full cursor-pointer hover:bg-[#2546bd]" onClick={handleRegister}>
             Register
-            </button>
+          </button>
         </div>
-
-
       </div>
     </div>
   );

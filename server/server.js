@@ -6,7 +6,7 @@ const axios = require('axios')
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors());  
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
 const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
@@ -36,17 +36,15 @@ const randomIdSchema = new mongoose.Schema({
 const RandomId = mongoose.model("RandomId", randomIdSchema);
 
 const registrationSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  contact: { type: String, required: true },
-  accountName: { type: String, required: true },
-  ifscCode: { type: String, required: true },
-  accountNumber: { type: String, required: true },
-  randomId: { type: String, required: true }, // New field for randomId
-  id: { type: String, required: true }, // New field for id
-  TokenTxn: { type: Boolean, default: false }, // New field for TokenTxn
-
+  paymentMethod: { type: String, required: true },
+  accountHolderName: { type: String, required: true },
+  linkedMobileNumber: { type: String, required: true },
+  Referalid: { type: String, required: true },
+  randomId: { type: String, unique: true, required: true },
+  TokenTxn: { type: Boolean, default: false },
 });
+
+
 
 const Registration = mongoose.model('Registration', registrationSchema);
 
@@ -114,6 +112,32 @@ app.get("/api/account", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+app.get("/api/getDetails", async (req, res) => {  
+  const { randomId } = req.query;   
+  console.log("Received randomId:", randomId); // Log the received randomId  
+
+  try {  
+    const registrations = await Registration.find({ Referalid: randomId }); 
+
+    if (registrations.length > 0) {
+      // Prepare the response in the required format
+      const tableData = registrations.map(registration => ({
+        name: registration.accountHolderName,
+        randomId: registration.randomId,
+        status: registration.TokenTxn,
+      }));
+
+      return res.status(200).json(tableData); // Send the data as a response
+    } else {
+      return res.status(404).json({ message: "No matching records found." });
+    }
+  } catch (error) {
+    console.error("Error fetching registration data:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 
 // first api for razor pay
@@ -251,28 +275,25 @@ app.get("/api/account", async (req, res) => {
 // });
 
 //save the user Details
-
 app.post('/api/register', async (req, res) => {
-  const { name, email, contact, accountName, ifscCode, accountNumber, randomId, id } = req.body;
+  const { paymentMethod, accountHolderName, linkedMobileNumber,Referalid,randomId } = req.body;
 
   try {
-    const existingUser = await Registration.findOne({ $or: [{ email }, { accountNumber }] });
+    const existingUser = await Registration.findOne({ linkedMobileNumber });
     if (existingUser) {
-      return res.status(400).json({ message: 'Email or Account Number already exists!' });
+      return res.status(400).json({ message: 'Linked Mobile Number already exists!' });
     }
 
     const newRegistration = new Registration({
-      name,
-      email,
-      contact,
-      accountName,
-      ifscCode,
-      accountNumber,
-      randomId, 
-      id 
+      paymentMethod,
+      accountHolderName,
+      linkedMobileNumber,
+      Referalid,
+      randomId 
     });
 
-    await newRegistration.save(); // Save to MongoDB
+    await newRegistration.save();
+    
     res.status(201).json({ message: 'Registration successful!' });
   } catch (error) {
     console.error('Error registering:', error);
@@ -281,8 +302,6 @@ app.post('/api/register', async (req, res) => {
 });
 
 
-
-// POST API to store or update TokenTxn with name
 app.post('/storeTokenTxn', async (req, res) => {
   const { name, tokenTxn } = req.body;
 

@@ -11,25 +11,35 @@ const Login = () => {
 
   console.log()
 
-  useEffect(() => {
-    const fetchAccountDetails = async () => {
-      try {
-        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
-        const data = await response.json();
-        setReference_id(data.referralId);
-      } catch (error) {
-        console.error("Error fetching account details:", error);
-      }
-    };
-    fetchAccountDetails();
-  }, []);
+  const handleCheck = async (id) => {
+    try {
+      const response = await fetch("https://cryptowallet-2.onrender.com/api/check-random-id", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ randomId: id, Account: " " }),  // Send account too
+      });
 
-  const handleRegister = () =>{
-    if(userReference_id==reference_id)
-    {
-      navigate("/"); 
+      const data = await response.json();
+      console.log("data",data);
+
+      if (data.exists) {
+        setReference_id(id.trim());
+      } 
+    } catch (error) {
+      console.error("Error checking random ID:", error);
     }
-  }
+};
+
+
+  const handleRegister = () => {
+    handleCheck(userReference_id);
+    if (userReference_id === reference_id) {
+      navigate("/logindashboard", { state: { randomId: userReference_id } });
+    }
+  };
+  
 
   return (
     <div className="min-h-screen flex flex-col items-center gradient-bg-transactions">

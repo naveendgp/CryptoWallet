@@ -1,36 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { TransactionContext } from "../context/TransactionContext";
+import { useLocation } from "react-router-dom";
 
-const DashBoard = () => {
+
+const LoginDashBoard = () => {
+    const location = useLocation();
+    const { randomId } = location.state; 
   const [account, setAccount] = useState(null);
-  const [randomId, setRandomId] = useState(null);
   const [amount, setAmount] = useState("1000");
   const [recipientAccount, setRecipientAccount] = useState("123456789-");
   const [ifscCode, setIfscCode] = useState("IBKL45678");
   const [name, setName] = useState("CUSTOMERNAME");
   const [message, setMessage] = useState("MESSAGE");
-  const [tableData, setTableData] = useState([]); // To store API response
-  const [error, setError] = useState(""); // For any error messages
-
-
+  const [tableData, setTableData] = useState([]);
+  const [error, setError] = useState(""); 
 
   const { currentAccount, handleChange, sendTransaction, payment, formData, isLoading } =
     useContext(TransactionContext);
-
-  useEffect(() => {
-    const fetchAccountDetails = async () => {
-      try {
-        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
-        const data = await response.json();
-        setAccount(data.account);
-        setRandomId(data.referralId);
-      } catch (error) {
-        console.error("Error fetching account details:", error);
-      }
-    };
-    fetchAccountDetails();
-  }, []);
 
   const handleSubmit = () => {
     sendTransaction();
@@ -41,12 +28,15 @@ const DashBoard = () => {
     const fetchData = async () => {
       try {
         setAccount(currentAccount);
-        
-        const response = await axios.get("https://cryptowallet-2.onrender.com/api/getDetails", {
-          params: { randomId }, // Pass randomId as query parameters
-        });
   
-        setTableData(response.data);
+        const response = await fetch(`https://cryptowallet-2.onrender.com/api/getDetails?randomId=${randomId}`); // Use fetch
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        setTableData(data);
         setError(""); 
       } catch (error) {
         console.error("Error fetching data", error);
@@ -58,6 +48,7 @@ const DashBoard = () => {
       fetchData(); 
     }
   }, [randomId]);
+  
   
 
   return (
@@ -116,11 +107,12 @@ const DashBoard = () => {
 
         {/* New Table */}
         <div className="mt-6">
-          <h3 className="text-lg font-bold mb-2">User Status</h3>
+          <h3 className="text-lg font-bold mb-2">Referral Status</h3>
           <table className="table-auto w-full text-left text-sm">
             <thead>
               <tr>
                 <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">RandomId</th>
                 <th className="px-4 py-2">Status</th>
               </tr>
             </thead>
@@ -128,6 +120,7 @@ const DashBoard = () => {
                 {tableData.map((row, index) => (
                   <tr key={index}>
                     <td className="border px-4 py-2">{row.name}</td>
+                    <td className="border px-4 py-2">{row.randomId}</td>
                     <td className="border px-4 py-2">
                       <input
                         type="checkbox"
@@ -145,4 +138,4 @@ const DashBoard = () => {
   );
 };
 
-export default DashBoard;
+export default LoginDashBoard;

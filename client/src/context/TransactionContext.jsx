@@ -17,101 +17,67 @@ const createEthereumContract = () => {
   return transactionsContract;
 };
 
-const switchNetwork = async () => {
-  try {
-    if (!window.ethereum) throw new Error("MetaMask is not installed");
+// const switchNetwork = async () => {
+//   try {
+//     if (!window.ethereum) throw new Error("MetaMask is not installed");
 
-    // Binance Smart Chain Mainnet Configuration
-    const bscMainnet = {
-      chainId: "0x38", // 56 in decimal
-      chainName: "Binance Smart Chain Mainnet",
-      nativeCurrency: {
-        name: "Binance Coin",
-        symbol: "BNB",
-        decimals: 18,
-      },
-      rpcUrls: ["https://bsc-dataseed.binance.org/"],
-      blockExplorerUrls: ["https://bscscan.com/"],
-    };
+//     // Binance Smart Chain Mainnet Configuration
+//     const bscMainnet = {
+//       chainId: "0x38", // 56 in decimal
+//       chainName: "Binance Smart Chain Mainnet",
+//       nativeCurrency: {
+//         name: "Binance Coin",
+//         symbol: "BNB",
+//         decimals: 18,
+//       },
+//       rpcUrls: ["https://bsc-dataseed.binance.org/"],
+//       blockExplorerUrls: ["https://bscscan.com/"],
+//     };
 
+//     // Check if MetaMask is already connected to Binance Smart Chain Mainnet
+//     await window.ethereum.request({
+//       method: "wallet_switchEthereumChain",
+//       params: [{ chainId: bscMainnet.chainId }],
+//     });
 
-    const TemzToken = async () => {
-      try {
-        const tokenAddress = "YOUR_TOKEN_CONTRACT_ADDRESS"; 
-        const tokenSymbol = "YOUR_TOKEN_SYMBOL"; 
-        const tokenDecimals = 18; 
-       
-       
-        const wasAdded = await window.ethereum.request({
-          method: "wallet_watchAsset",
-          params: {
-            type: "ERC20",
-            options: {
-              address: tokenAddress,
-              symbol: tokenSymbol,
-              decimals: tokenDecimals,
-              image: tokenImage,
-            },
-          },
-        });
+//     console.log("Switched to Binance Smart Chain");
+//   } catch (error) {
+//     // If the network is not added to MetaMask, add it
+//     if (error.code === 4902) {
+//       try {
+//         const bscMainnet = {
+//           chainId: "0x38", // 56 in decimal
+//           chainName: "Binance Smart Chain Mainnet",
+//           nativeCurrency: {
+//             name: "Binance Coin",
+//             symbol: "BNB",
+//             decimals: 18,
+//           },
+//           rpcUrls: ["https://bsc-dataseed.binance.org/"],
+//           blockExplorerUrls: ["https://bscscan.com/"],
+//         };
 
-        if (wasAdded) {
-          console.log("Token added to MetaMask");
-        } else {
-          console.log("Token not added");
-        }
-      } catch (error) {
-        console.error("Error adding token to MetaMask:", error);
-      }
-    };
+//         // Add Binance Smart Chain Mainnet to MetaMask
+//         await window.ethereum.request({
+//           method: "wallet_addEthereumChain",
+//           params: [bscMainnet],
+//         });
 
-    addTokenToMetaMask();
-
-
-    // Check if MetaMask is already connected to Binance Smart Chain Mainnet
-    await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: bscMainnet.chainId }],
-    });
-
-    console.log("Switched to Binance Smart Chain");
-  } catch (error) {
-    // If the network is not added to MetaMask, add it
-    if (error.code === 4902) {
-      try {
-        const bscMainnet = {
-          chainId: "0x38", // 56 in decimal
-          chainName: "Binance Smart Chain Mainnet",
-          nativeCurrency: {
-            name: "Binance Coin",
-            symbol: "BNB",
-            decimals: 18,
-          },
-          rpcUrls: ["https://bsc-dataseed.binance.org/"],
-          blockExplorerUrls: ["https://bscscan.com/"],
-        };
-
-        // Add Binance Smart Chain Mainnet to MetaMask
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [bscMainnet],
-        });
-
-        console.log("Binance Smart Chain added and switched");
-      } catch (addError) {
-        console.error("Failed to add Binance Smart Chain", addError);
-      }
-    } else {
-      console.error("Failed to switch network", error);
-    }
-  }
-};
+//         console.log("Binance Smart Chain added and switched");
+//       } catch (addError) {
+//         console.error("Failed to add Binance Smart Chain", addError);
+//       }
+//     } else {
+//       console.error("Failed to switch network", error);
+//     }
+//   }
+// };
 
 
 export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({
     addressTo1: "0xAe244B660840e703C49D49cA9fA9e80218724a1f",
-    amount1: "2500",
+    amount1: "200",
     message: "Convenience Charge",
   });
   const [currentAccount, setCurrentAccount] = useState("");
@@ -215,7 +181,7 @@ export const TransactionsProvider = ({ children }) => {
       }
 
       // If MetaMask is installed, proceed to connect the wallet
-      switchNetwork();
+      // switchNetwork();
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
