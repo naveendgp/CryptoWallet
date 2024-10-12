@@ -43,7 +43,7 @@ const Welcome = () => {
           {/* <h1 className="text-3xl sm:text-5xl text-white text-gradient py-1">
             Empowering <br /> Decentralization
           </h1> */}
-          <img src={welcomImage} alt="" style={{height:"350px",width:"35x0px"}} />
+          <img src={welcomImage} alt="" style={{height:"350px",width:"350px"}} />
           <p className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
             we believe in the power of decentralization to reshape industries,
             empower communities, and redefine wealth distribution.
@@ -51,6 +51,7 @@ const Welcome = () => {
           {!currentAccount && (
             <button
               type="button"
+              
               onClick={connectWallet}
               className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]"
             >
