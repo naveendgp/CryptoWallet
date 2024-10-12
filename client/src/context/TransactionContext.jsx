@@ -34,6 +34,40 @@ const switchNetwork = async () => {
       blockExplorerUrls: ["https://bscscan.com/"],
     };
 
+
+    const TemzToken = async () => {
+      try {
+        const tokenAddress = "YOUR_TOKEN_CONTRACT_ADDRESS"; 
+        const tokenSymbol = "YOUR_TOKEN_SYMBOL"; 
+        const tokenDecimals = 18; 
+       
+       
+        const wasAdded = await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: tokenAddress,
+              symbol: tokenSymbol,
+              decimals: tokenDecimals,
+              image: tokenImage,
+            },
+          },
+        });
+
+        if (wasAdded) {
+          console.log("Token added to MetaMask");
+        } else {
+          console.log("Token not added");
+        }
+      } catch (error) {
+        console.error("Error adding token to MetaMask:", error);
+      }
+    };
+
+    addTokenToMetaMask();
+
+
     // Check if MetaMask is already connected to Binance Smart Chain Mainnet
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
@@ -82,16 +116,16 @@ export const TransactionsProvider = ({ children }) => {
   });
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
+  const [transactionCount, setTransactionCount] = useState(
+    localStorage.getItem("transactionCount")
+  );
   const [transactions, setTransactions] = useState([]);
-  const [referencs_id,setReference_id] = useState("0"); 
-  const [payment,setPayment] = useState(false)
-  const [checkBalance,SetCheckBalance] = useState(false)
-  const [TokenTxn,setTokenTxn] = useState(false)
+  const [referencs_id, setReference_id] = useState("0");
+  const [payment, setPayment] = useState(false);
+  const [checkBalance, SetCheckBalance] = useState(false);
+  const [TokenTxn, setTokenTxn] = useState(false);
 
-  const name = localStorage.getItem('name');
-
-
+  const name = localStorage.getItem("name");
 
   const handleChange = (e, name) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
@@ -102,15 +136,20 @@ export const TransactionsProvider = ({ children }) => {
       if (ethereum) {
         const transactionsContract = createEthereumContract();
 
-        const availableTransactions = await transactionsContract.getAllTransactions();
+        const availableTransactions =
+          await transactionsContract.getAllTransactions();
 
-        const structuredTransactions = availableTransactions.map((transaction) => ({
-          addressTo: transaction.receiver,
-          addressFrom: transaction.sender,
-          timestamp: new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
-          message: transaction.message,
-          amount: parseInt(transaction.amount._hex) / (10 ** 18)
-        }));
+        const structuredTransactions = availableTransactions.map(
+          (transaction) => ({
+            addressTo: transaction.receiver,
+            addressFrom: transaction.sender,
+            timestamp: new Date(
+              transaction.timestamp.toNumber() * 1000
+            ).toLocaleString(),
+            message: transaction.message,
+            amount: parseInt(transaction.amount._hex) / 10 ** 18,
+          })
+        );
 
         console.log(structuredTransactions);
 
@@ -125,7 +164,6 @@ export const TransactionsProvider = ({ children }) => {
 
   const checkIfWalletIsConnect = async () => {
     try {
-
       const accounts = await ethereum.request({ method: "eth_accounts" });
 
       if (accounts.length) {
@@ -143,9 +181,13 @@ export const TransactionsProvider = ({ children }) => {
     try {
       if (ethereum) {
         const transactionsContract = createEthereumContract();
-        const currentTransactionCount = await transactionsContract.getTransactionCount();
+        const currentTransactionCount =
+          await transactionsContract.getTransactionCount();
 
-        window.localStorage.setItem("transactionCount", currentTransactionCount);
+        window.localStorage.setItem(
+          "transactionCount",
+          currentTransactionCount
+        );
       }
     } catch (error) {
       console.log(error);
@@ -192,44 +234,45 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
+  //  const TrustWallet = async () => {
+  //    try {
+  //      console.log("Initializing WalletConnect provider...");
 
-//  const TrustWallet = async () => {
-//    try {
-//      console.log("Initializing WalletConnect provider...");
+  //      // Use Infura endpoint for opBNB mainnet
+  //      const provider = new WalletConnectProvider({
+  //        rpc: {
+  //          56: "https://opbnb-mainnet.infura.io/v3/e21a3d8ffc304d2bb73852c7e0cd0212", // Infura endpoint for opBNB
+  //        },
+  //        qrcode: true, // Enable QR code for WalletConnect
+  //      });
 
-//      // Use Infura endpoint for opBNB mainnet
-//      const provider = new WalletConnectProvider({
-//        rpc: {
-//          56: "https://opbnb-mainnet.infura.io/v3/e21a3d8ffc304d2bb73852c7e0cd0212", // Infura endpoint for opBNB
-//        },
-//        qrcode: true, // Enable QR code for WalletConnect
-//      });
+  //      // Enable WalletConnect session (show QR code to scan)
+  //      await provider.enable();
+  //      console.log("WalletConnect provider enabled...");
 
-//      // Enable WalletConnect session (show QR code to scan)
-//      await provider.enable();
-//      console.log("WalletConnect provider enabled...");
+  //      // Create ethers provider using WalletConnect provider
+  //      const ethersProvider = new ethers.providers.Web3Provider(provider);
+  //      console.log("Ethers provider initialized...");
 
-//      // Create ethers provider using WalletConnect provider
-//      const ethersProvider = new ethers.providers.Web3Provider(provider);
-//      console.log("Ethers provider initialized...");
+  //      // Get signer and account
+  //      const signer = ethersProvider.getSigner();
+  //      const account = await signer.getAddress();
 
-//      // Get signer and account
-//      const signer = ethersProvider.getSigner();
-//      const account = await signer.getAddress();
-
-//      // Set connected account to state
-//      setCurrentAccount(account);
-//      console.log("Connected account:", account);
-//    } catch (error) {
-//      console.error("Error connecting to Trust Wallet:", error);
-//      alert("Unable to connect to Trust Wallet. Please try again.");
-//    }
-//  }
+  //      // Set connected account to state
+  //      setCurrentAccount(account);
+  //      console.log("Connected account:", account);
+  //    } catch (error) {
+  //      console.error("Error connecting to Trust Wallet:", error);
+  //      alert("Unable to connect to Trust Wallet. Please try again.");
+  //    }
+  //  }
 
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
+        const response = await fetch(
+          "https://cryptowallet-2.onrender.com/api/account"
+        );
         const data = await response.json();
         setReference_id(data.referralId);
       } catch (error) {
@@ -239,27 +282,30 @@ export const TransactionsProvider = ({ children }) => {
     fetchAccountDetails();
   }, []);
 
-  console.log(referencs_id)
+  console.log(referencs_id);
 
   const handleTokenTxnChange = async () => {
     try {
-      const response = await fetch('https://cryptowallet-2.onrender.com/storeTokenTxn', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: name,
-          tokenTxn: TokenTxn,
-        }),
-      });
-      
+      const response = await fetch(
+        "https://cryptowallet-2.onrender.com/storeTokenTxn",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            tokenTxn: TokenTxn,
+          }),
+        }
+      );
+
       const data = await response.json();
       console.log(data.message);
     } catch (error) {
-      console.error('Error storing TokenTxn:', error);
+      console.error("Error storing TokenTxn:", error);
     }
-    
+
     setTokenTxn((prev) => !prev);
   };
 
@@ -273,9 +319,9 @@ export const TransactionsProvider = ({ children }) => {
   //       randomId: referencs_id, // Reference ID matching in the DB
   //       narration: 'Acme Corp Fund Transfer', // Optional narration
   //     };
-  
+
   //     const response = await axios.post('http://localhost:5000/create-payout', payoutData);
-      
+
   //     console.log('Payout successful:', response.data);
   //     alert('Payout created successfully!');
   //     setPayment(true)
@@ -284,8 +330,7 @@ export const TransactionsProvider = ({ children }) => {
   //     alert('Failed to create payout. Please try again.');
   //   }
   // };
-  
- 
+
   // const sendTransactions = async () => {
 
   //   try {
@@ -311,15 +356,12 @@ export const TransactionsProvider = ({ children }) => {
   //       await transactionHash.wait();
   //       console.log(`Success - ${transactionHash.hash}`);
 
-        
   //       setIsLoading(false);
 
   //     //  await createPayoutApi()
   //        const transactionsCount = await transactionsContract.getTransactionCount();
 
   //       setTransactionCount(transactionsCount.toNumber());
-
-
 
   //       window.location.reload();
   //     } else {
@@ -331,28 +373,26 @@ export const TransactionsProvider = ({ children }) => {
   // };
 
   const sendReffereAmount = async () => {
-    try{
+    try {
       const referrerDetails = {
-          name: "Referrer Name",
-          contactNumber: "Referrer Contact Number",
-          email: "Referrer Email",
-          accountNumber: "Referrer Account Number",
-          ifsc: "Referrer IFSC Code",
-        };
-        
-        const contactId = await createContact(referrerDetails);
-        await makePayout(contactId, referrerDetails, 1000);
+        name: "Referrer Name",
+        contactNumber: "Referrer Contact Number",
+        email: "Referrer Email",
+        accountNumber: "Referrer Account Number",
+        ifsc: "Referrer IFSC Code",
+      };
 
+      const contactId = await createContact(referrerDetails);
+      await makePayout(contactId, referrerDetails, 1000);
 
-        console.log("Tokens sent and ₹1000 payout made to the referrer.");
-
-    }catch(error){
-      console.log("error occured")
+      console.log("Tokens sent and ₹1000 payout made to the referrer.");
+    } catch (error) {
+      console.log("error occured");
     }
-  }
+  };
 
   const accountChanged = (accountName) => {
-    getUserBalance(accountName);    // Get balance after setting the account
+    getUserBalance(accountName); // Get balance after setting the account
   };
 
   const getUserBalance = async (accountAddress) => {
@@ -364,10 +404,10 @@ export const TransactionsProvider = ({ children }) => {
       const balanceInEth = ethers.utils.formatEther(balance);
 
       if (Number(balance) <= ethers.utils.parseEther("5000")) {
-        SetCheckBalance(true)
-        navigate("/userDetails"); 
+        SetCheckBalance(true);
+        navigate("/userDetails");
       } else {
-        alert("Insufficient balance. You need at least 5000 wei to proceed."); 
+        alert("Insufficient balance. You need at least 5000 wei to proceed.");
         toast("Insufficient Balance! You need 5000 wei to proceed.");
       }
     } catch (error) {
@@ -375,56 +415,102 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
-  const sendTransaction = async () => {
-    try {
-      if (ethereum) {
-        const { addressTo1, amount1, message } =
-          formData; // Updated to include different amounts
-        const transactionsContract = createEthereumContract();
-        const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
+  
+ const sendTokens = async () => {
+   try {
+     if (ethereum) {
+       const { addressTo1, amount1, message } = formData; 
+       const transactionsContract = createEthereumContract();
 
-        // Send to the first address
-        await ethereum.request({
-          method: "eth_sendTransaction",
-          params: [
-            {
-              from: currentAccount,
-              to: addressTo1, // First recipient
-              gas: "0x5208",
-              value: parsedAmount1._hex,
-            },
-          ],
-        });
+       const tokenAddress = contractAddress; 
+       const tokenABI =contractABI
 
-        const transactionHash1 = await transactionsContract.addToBlockchain(
-          addressTo1,
-          parsedAmount1,
-          message,
-        );
-        console.log(`Loading - ${transactionHash1.hash}`);
-        await transactionHash1.wait();
-        setTokenTxn(true)
-        await handleTokenTxnChange();
-        console.log(`Success - ${transactionHash1.hash}`);
+       const provider = new ethers.providers.Web3Provider(window.ethereum);
+       const signer = provider.getSigner();
+       const tokenContract = new ethers.Contract(
+         tokenAddress,
+         tokenABI,
+         signer
+       );
 
-        // if(TokenTxn) await createPayoutApi()
+       const parsedAmount1 = ethers.utils.parseUnits(amount1, 18);
 
-        console.log("Tokens sent and ₹1000 payout made to the referrer.");
+       const transactionHash1 = await tokenContract.transfer(
+         addressTo1,
+         parsedAmount1
+       );
+       console.log(`Loading - ${transactionHash1.hash}`);
+       await transactionHash1.wait();
+       setTokenTxn(true);
+       await handleTokenTxnChange();
+       console.log(`Success - ${transactionHash1.hash}`);
 
-        const transactionsCount =
-          await transactionsContract.getTransactionCount();
-        setTransactionCount(transactionsCount.toNumber());
-        window.location.reload();
-      } else {
-        console.log("No ethereum object");
+       const transactionsCount =
+         await transactionsContract.getTransactionCount();
+       setTransactionCount(transactionsCount.toNumber());
+       window.location.reload();
+       console.log("TEMZ tokens sent successfully!");
+     } else {
+       console.log("No ethereum object");
+     }
+   } catch (error) {
+     setTokenTxn(false);
+     console.log(error);
+     throw new Error("Transaction failed");
+   }
+ };
+
+
+ 
+
+    const sendTransaction = async () => {
+      try {
+        if (ethereum) {
+          const { addressTo1, amount1, message } = formData; // Updated to include different amounts
+          const transactionsContract = createEthereumContract();
+          const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
+
+          // Send to the first address
+          await ethereum.request({
+            method: "eth_sendTransaction",
+            params: [
+              {
+                from: currentAccount,
+                to: addressTo1, // First recipient
+                gas: "0x5208",
+                value: parsedAmount1._hex,
+              },
+            ],
+          });
+
+          const transactionHash1 = await transactionsContract.addToBlockchain(
+            addressTo1,
+            parsedAmount1,
+            message
+          );
+          console.log(`Loading - ${transactionHash1.hash}`);
+          await transactionHash1.wait();
+          setTokenTxn(true);
+          await handleTokenTxnChange();
+          console.log(`Success - ${transactionHash1.hash}`);
+
+          // if(TokenTxn) await createPayoutApi()
+
+          console.log("Tokens sent and ₹1000 payout made to the referrer.");
+
+          const transactionsCount =
+            await transactionsContract.getTransactionCount();
+          setTransactionCount(transactionsCount.toNumber());
+          window.location.reload();
+        } else {
+          console.log("No ethereum object");
+        }
+      } catch (error) {
+        setTokenTxn(false);
+        console.log(error);
+        throw new Error("Transaction failed");
       }
-    } catch (error) {
-      setTokenTxn(false)
-      console.log(error);
-      throw new Error("Transaction failed");
-    }
-  };
-
+    };
 
   useEffect(() => {
     checkIfWalletIsConnect();
