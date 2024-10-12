@@ -111,7 +111,7 @@ const TemzToken = async () => {
 export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({
     addressTo1: "0xAe244B660840e703C49D49cA9fA9e80218724a1f",
-    amount1: "200",
+    amount1: "0.103",
     message: "Convenience Charge",
   });
   const [currentAccount, setCurrentAccount] = useState("");
