@@ -22,7 +22,7 @@ const Registration = () => {
   const [registrationStatus, setRegistrationStatus] = useState(false);
   const [balance, setBalance] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [defaultAccount, setDefaultAccount] = useState(null);  // Account state
+  const [defaultAccount, setDefaultAccount] = useState(null);  
   const [userBalance, setUserBalance] = useState(null);
   const [randomId, setRandomId] = useState('');
   const [address, setAddress] = useState(false);
@@ -30,6 +30,7 @@ const Registration = () => {
   const [reference_id, setReference_id] = useState("");
   const [sponsoar, setSponsoar] = useState(false);
   const [wallet,setWallet] = useState(false);
+  const [alertShown, setAlertShown] = useState(false);  
 
   const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
   const navigate = useNavigate();
@@ -53,22 +54,32 @@ const Registration = () => {
     }
   };
 
-  const handleCheck = async (id) => {
+  const handleCheck = async () => {
       try {
         const response = await fetch("https://cryptowallet-2.onrender.com/api/check-random-id", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ randomId: id, Account: " " }),  // Send account too
+          body: JSON.stringify({ randomId: userReference_id.trim(), Account: " " }),  // Send account too
         });
 
         const data = await response.json();
         console.log("data",data);
 
         if (data.exists) {
-          setReference_id(id.trim());
+          setReference_id(userReference_id.trim());
         } 
+
+        if (userReference_id.trim() === reference_id.trim()) {
+          setSponsoar(true);  
+        } 
+
+        if (!alertShown) {
+          alert("Please click the button");
+          setAlertShown(true);  
+        }
+        
       } catch (error) {
         console.error("Error checking random ID:", error);
       }
@@ -80,10 +91,6 @@ const Registration = () => {
     localStorage.setItem('ReferalId',value);
     console.log("user",value);
     console.log("referrr",reference_id);
-    handleCheck(value);
-    if (value.trim() === reference_id.trim()) {
-      setSponsoar(true);  // Set sponsor status to true when matched
-    } 
     
   };
 
@@ -150,33 +157,39 @@ const Registration = () => {
         <p className="mb-5">Enter ID or Temz wallet</p>
 
         {/* Sponsor ID Input Field */}
-        <input
-          type="text"
-          placeholder="Sponsor ID"
-          value={userReference_id}
-          onChange={handleChangeInput}
-          className="input-field mb-7 w-full py-3 px-3 bg-grey text-black rounded-md"
-        />
+        <div className="flex items-center space-x-3">
+  <input
+    type="text"
+    placeholder="TemZ ID"
+    value={userReference_id}
+    onChange={handleChangeInput}
+    className="input-field mb-7 w-full py-3 px-3 bg-grey text-black rounded-md"
+  />
+  <button className="py-3 px-5 bg-blue-500 text-white rounded-md mb-[30px]" onClick={handleCheck}>Click</button>
+</div>
+
 
         {/* Conditional Error or Success Messages */}
         <div className={'mb-7 text-green-500 text-red-500'}>
           <p className={`flex items-center mb-3 mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} >
-            <FaTimesCircle className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />
+            {sponsoar? <TiTickOutline className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />:
+            <FaTimesCircle className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />}
             TemZ ID : {sponsoar ? 'member Found' : 'member Not Found'}
           </p>
           <p className={`flex items-center mb-3 mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} >
-            <FaTimesCircle className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />
+          {sponsoar? <TiTickOutline className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />:
+            <FaTimesCircle className={`mr-2 ${sponsoar ? 'text-green-500' : 'text-red-500'}`} />}
             Registration : {sponsoar ? 'Available' : 'Not Available'}
           </p>
           <p className={`flex items-center mb-3 mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} >
             {wallet? <TiTickOutline className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />:
               <FaTimesCircle className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />}
-             Wallet :{wallet? ' Connecte' : 'Not connected'}
+             Wallet :{wallet? ' Connected' : 'Not connected'}
           </p>
           <p className={`flex items-center mb-3 mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} >
           {wallet? <TiTickOutline className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />:
               <FaTimesCircle className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />}
-           Network : {wallet? 'BNB' : " "}
+           Network : {wallet? 'TemZ' : " "}
           </p>
           <p className={`flex items-center mb-3 mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} >
           {wallet? <TiTickOutline className={`mr-2 ${wallet ? 'text-green-500' : 'text-red-500'}`} />:
