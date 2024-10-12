@@ -5,7 +5,7 @@ import axios from 'axios'
 import { contractABI, contractAddress } from "../utils/constants";
 import { BsCheckLg } from "react-icons/bs";
 
-export const TransactionContext = React.createContext();
+export const  TransactionContext = React.createContext();
 
 const { ethereum } = window;
 
@@ -16,6 +16,38 @@ const createEthereumContract = () => {
 
   return transactionsContract;
 };
+
+const addToken = async () => {
+  console.log("first")
+  try {
+    // TEMZ Token Information
+    const tokenAddress = contractAddress; // Replace with your token's contract address
+    const tokenSymbol = "TEMZ"; // Replace with your token's symbol
+    const tokenDecimals = 18; // Typically 18, but replace with your token's decimal precision if different
+
+    // Add TEMZ Token to MetaMask
+    const wasAdded = await window.ethereum.request({
+      method: "wallet_watchAsset",
+      params: {
+        type: "ERC20", // Token type
+        options: {
+          address: tokenAddress, // The contract address of the token
+          symbol: tokenSymbol, // A string, up to 11 characters
+          decimals: tokenDecimals, // Number of decimals in the token
+        },
+      },
+    });
+
+    if (wasAdded) {
+      console.log(`${tokenSymbol} added to MetaMask!`);
+    } else {
+      console.log("Token not added.");
+    }
+  } catch (error) {
+    console.error("Error adding token to MetaMask", error);
+  }
+};
+
 
 const switchNetwork = async () => {
   try {
@@ -34,6 +66,11 @@ const switchNetwork = async () => {
       blockExplorerUrls: ["https://bscscan.com/"],
     };
 
+    // Check if MetaMask is already connected to Binance Smart Chain Mainnet
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: bscMainnet.chainId }],
+    });
     // Check if MetaMask is already connected to Binance Smart Chain Mainnet
     await window.ethereum.request({
       method: "wallet_switchEthereumChain",
@@ -73,40 +110,6 @@ const switchNetwork = async () => {
   }
 };
 
-const TemzToken = async () => {
-  console.log("start");
-  try {
-    console.log("start11");
-
-    const tokenAddress = contractAddress; 
-    const tokenSymbol = "TEMZ"; 
-    const tokenDecimals = 18; 
-   
-   
-    const wasAdded = await window.ethereum.request({
-      method: "wallet_watchAsset",
-      params: {
-        type: "BEP20",
-        options: {
-          address: tokenAddress,
-          symbol: tokenSymbol,
-          decimals: tokenDecimals,
-        },
-      },
-    });
-    console.log("was",wasAdded);
-
-    if (wasAdded) {
-      console.log("Token added to MetaMask");
-    } else {
-      console.log("Token not added");
-    }
-  } catch (error) {
-    console.error("Error adding token to MetaMask:", error);
-  }
-};
-
-
 
 export const TransactionsProvider = ({ children }) => {
   const [formData, setFormData] = useState({
@@ -116,16 +119,16 @@ export const TransactionsProvider = ({ children }) => {
   });
   const [currentAccount, setCurrentAccount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
+  const [transactionCount, setTransactionCount] = useState(
+    localStorage.getItem("transactionCount")
+  );
   const [transactions, setTransactions] = useState([]);
-  const [referencs_id,setReference_id] = useState("0"); 
-  const [payment,setPayment] = useState(false)
-  const [checkBalance,SetCheckBalance] = useState(false)
-  const [TokenTxn,setTokenTxn] = useState(false)
+  const [referencs_id, setReference_id] = useState("0");
+  const [payment, setPayment] = useState(false);
+  const [checkBalance, SetCheckBalance] = useState(false);
+  const [TokenTxn, setTokenTxn] = useState(false);
 
-  const name = localStorage.getItem('name');
-
-
+  const name = localStorage.getItem("name");
 
   const handleChange = (e, name) => {
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
@@ -136,15 +139,20 @@ export const TransactionsProvider = ({ children }) => {
       if (ethereum) {
         const transactionsContract = createEthereumContract();
 
-        const availableTransactions = await transactionsContract.getAllTransactions();
+        const availableTransactions =
+          await transactionsContract.getAllTransactions();
 
-        const structuredTransactions = availableTransactions.map((transaction) => ({
-          addressTo: transaction.receiver,
-          addressFrom: transaction.sender,
-          timestamp: new Date(transaction.timestamp.toNumber() * 1000).toLocaleString(),
-          message: transaction.message,
-          amount: parseInt(transaction.amount._hex) / (10 ** 18)
-        }));
+        const structuredTransactions = availableTransactions.map(
+          (transaction) => ({
+            addressTo: transaction.receiver,
+            addressFrom: transaction.sender,
+            timestamp: new Date(
+              transaction.timestamp.toNumber() * 1000
+            ).toLocaleString(),
+            message: transaction.message,
+            amount: parseInt(transaction.amount._hex) / 10 ** 18,
+          })
+        );
 
         console.log(structuredTransactions);
 
@@ -159,7 +167,6 @@ export const TransactionsProvider = ({ children }) => {
 
   const checkIfWalletIsConnect = async () => {
     try {
-
       const accounts = await ethereum.request({ method: "eth_accounts" });
 
       if (accounts.length) {
@@ -177,9 +184,13 @@ export const TransactionsProvider = ({ children }) => {
     try {
       if (ethereum) {
         const transactionsContract = createEthereumContract();
-        const currentTransactionCount = await transactionsContract.getTransactionCount();
+        const currentTransactionCount =
+          await transactionsContract.getTransactionCount();
 
-        window.localStorage.setItem("transactionCount", currentTransactionCount);
+        window.localStorage.setItem(
+          "transactionCount",
+          currentTransactionCount
+        );
       }
     } catch (error) {
       console.log(error);
@@ -207,8 +218,8 @@ export const TransactionsProvider = ({ children }) => {
       }
 
       // If MetaMask is installed, proceed to connect the wallet
-      // switchNetwork();
-      TemzToken();
+      switchNetwork();
+     // addToken()
 
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
@@ -227,44 +238,45 @@ export const TransactionsProvider = ({ children }) => {
     }
   };
 
+  //  const TrustWallet = async () => {
+  //    try {
+  //      console.log("Initializing WalletConnect provider...");
 
-//  const TrustWallet = async () => {
-//    try {
-//      console.log("Initializing WalletConnect provider...");
+  //      // Use Infura endpoint for opBNB mainnet
+  //      const provider = new WalletConnectProvider({
+  //        rpc: {
+  //          56: "https://opbnb-mainnet.infura.io/v3/e21a3d8ffc304d2bb73852c7e0cd0212", // Infura endpoint for opBNB
+  //        },
+  //        qrcode: true, // Enable QR code for WalletConnect
+  //      });
 
-//      // Use Infura endpoint for opBNB mainnet
-//      const provider = new WalletConnectProvider({
-//        rpc: {
-//          56: "https://opbnb-mainnet.infura.io/v3/e21a3d8ffc304d2bb73852c7e0cd0212", // Infura endpoint for opBNB
-//        },
-//        qrcode: true, // Enable QR code for WalletConnect
-//      });
+  //      // Enable WalletConnect session (show QR code to scan)
+  //      await provider.enable();
+  //      console.log("WalletConnect provider enabled...");
 
-//      // Enable WalletConnect session (show QR code to scan)
-//      await provider.enable();
-//      console.log("WalletConnect provider enabled...");
+  //      // Create ethers provider using WalletConnect provider
+  //      const ethersProvider = new ethers.providers.Web3Provider(provider);
+  //      console.log("Ethers provider initialized...");
 
-//      // Create ethers provider using WalletConnect provider
-//      const ethersProvider = new ethers.providers.Web3Provider(provider);
-//      console.log("Ethers provider initialized...");
+  //      // Get signer and account
+  //      const signer = ethersProvider.getSigner();
+  //      const account = await signer.getAddress();
 
-//      // Get signer and account
-//      const signer = ethersProvider.getSigner();
-//      const account = await signer.getAddress();
-
-//      // Set connected account to state
-//      setCurrentAccount(account);
-//      console.log("Connected account:", account);
-//    } catch (error) {
-//      console.error("Error connecting to Trust Wallet:", error);
-//      alert("Unable to connect to Trust Wallet. Please try again.");
-//    }
-//  }
+  //      // Set connected account to state
+  //      setCurrentAccount(account);
+  //      console.log("Connected account:", account);
+  //    } catch (error) {
+  //      console.error("Error connecting to Trust Wallet:", error);
+  //      alert("Unable to connect to Trust Wallet. Please try again.");
+  //    }
+  //  }
 
   useEffect(() => {
     const fetchAccountDetails = async () => {
       try {
-        const response = await fetch("https://cryptowallet-2.onrender.com/api/account");
+        const response = await fetch(
+          "https://cryptowallet-2.onrender.com/api/account"
+        );
         const data = await response.json();
         setReference_id(data.referralId);
       } catch (error) {
@@ -274,27 +286,30 @@ export const TransactionsProvider = ({ children }) => {
     fetchAccountDetails();
   }, []);
 
-  console.log(referencs_id)
+  console.log(referencs_id);
 
   const handleTokenTxnChange = async () => {
     try {
-      const response = await fetch('https://cryptowallet-2.onrender.com/storeTokenTxn', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: name,
-          tokenTxn: TokenTxn,
-        }),
-      });
-      
+      const response = await fetch(
+        "https://cryptowallet-2.onrender.com/storeTokenTxn",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name,
+            tokenTxn: TokenTxn,
+          }),
+        }
+      );
+
       const data = await response.json();
       console.log(data.message);
     } catch (error) {
-      console.error('Error storing TokenTxn:', error);
+      console.error("Error storing TokenTxn:", error);
     }
-    
+
     setTokenTxn((prev) => !prev);
   };
 
@@ -308,9 +323,9 @@ export const TransactionsProvider = ({ children }) => {
   //       randomId: referencs_id, // Reference ID matching in the DB
   //       narration: 'Acme Corp Fund Transfer', // Optional narration
   //     };
-  
+
   //     const response = await axios.post('http://localhost:5000/create-payout', payoutData);
-      
+
   //     console.log('Payout successful:', response.data);
   //     alert('Payout created successfully!');
   //     setPayment(true)
@@ -319,8 +334,7 @@ export const TransactionsProvider = ({ children }) => {
   //     alert('Failed to create payout. Please try again.');
   //   }
   // };
-  
- 
+
   // const sendTransactions = async () => {
 
   //   try {
@@ -346,15 +360,12 @@ export const TransactionsProvider = ({ children }) => {
   //       await transactionHash.wait();
   //       console.log(`Success - ${transactionHash.hash}`);
 
-        
   //       setIsLoading(false);
 
   //     //  await createPayoutApi()
   //        const transactionsCount = await transactionsContract.getTransactionCount();
 
   //       setTransactionCount(transactionsCount.toNumber());
-
-
 
   //       window.location.reload();
   //     } else {
@@ -366,28 +377,26 @@ export const TransactionsProvider = ({ children }) => {
   // };
 
   const sendReffereAmount = async () => {
-    try{
+    try {
       const referrerDetails = {
-          name: "Referrer Name",
-          contactNumber: "Referrer Contact Number",
-          email: "Referrer Email",
-          accountNumber: "Referrer Account Number",
-          ifsc: "Referrer IFSC Code",
-        };
-        
-        const contactId = await createContact(referrerDetails);
-        await makePayout(contactId, referrerDetails, 1000);
+        name: "Referrer Name",
+        contactNumber: "Referrer Contact Number",
+        email: "Referrer Email",
+        accountNumber: "Referrer Account Number",
+        ifsc: "Referrer IFSC Code",
+      };
 
+      const contactId = await createContact(referrerDetails);
+      await makePayout(contactId, referrerDetails, 1000);
 
-        console.log("Tokens sent and ₹1000 payout made to the referrer.");
-
-    }catch(error){
-      console.log("error occured")
+      console.log("Tokens sent and ₹1000 payout made to the referrer.");
+    } catch (error) {
+      console.log("error occured");
     }
-  }
+  };
 
   const accountChanged = (accountName) => {
-    getUserBalance(accountName);    // Get balance after setting the account
+    getUserBalance(accountName); // Get balance after setting the account
   };
 
   const getUserBalance = async (accountAddress) => {
@@ -399,10 +408,10 @@ export const TransactionsProvider = ({ children }) => {
       const balanceInEth = ethers.utils.formatEther(balance);
 
       if (Number(balance) <= ethers.utils.parseEther("5000")) {
-        SetCheckBalance(true)
-        navigate("/userDetails"); 
+        SetCheckBalance(true);
+        navigate("/userDetails");
       } else {
-        alert("Insufficient balance. You need at least 5000 wei to proceed."); 
+        alert("Insufficient balance. You need at least 5000 wei to proceed.");
         toast("Insufficient Balance! You need 5000 wei to proceed.");
       }
     } catch (error) {
@@ -442,33 +451,148 @@ export const TransactionsProvider = ({ children }) => {
         await handleTokenTxnChange();
         console.log(`Success - ${transactionHash1.hash}`);
 
-        // if(TokenTxn) await createPayoutApi()
-
-        console.log("Tokens sent and ₹1000 payout made to the referrer.");
-
-        const transactionsCount =
-          await transactionsContract.getTransactionCount();
-        setTransactionCount(transactionsCount.toNumber());
-        window.location.reload();
-      } else {
-        console.log("No ethereum object");
-      }
-    } catch (error) {
-      setTokenTxn(false)
-      console.log(error);
-      throw new Error("Transaction failed");
-    }
-  };
+       const transactionsCount =
+         await transactionsContract.getTransactionCount();
+       setTransactionCount(transactionsCount.toNumber());
+       window.location.reload();
+       console.log("TEMZ tokens sent successfully!");
+     } else {
+       console.log("No ethereum object");
+     }
+   } catch (error) {
+     setTokenTxn(false);
+     console.log(error);
+     throw new Error("Transaction failed");
+   }
+ };
 
 
-  const sendTransaction = async () => {
-   
-  };
-  
-  
-  
-  
  
+
+    // const sendTransaction = async () => {
+    //   try {
+    //     if (ethereum) {
+    //       const { addressTo1, amount1, message } = formData; // Updated to include different amounts
+    //       const transactionsContract = createEthereumContract();
+    //       const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
+
+    //       // Send to the first address
+    //       await ethereum.request({
+    //         method: "eth_sendTransaction",
+    //         params: [
+    //           {
+    //             from: currentAccount,
+    //             to: addressTo1, // First recipient
+    //             gas: "0x5208",
+    //             value: parsedAmount1._hex,
+    //           },
+    //         ],
+    //       });
+
+    //       const transactionHash1 = await transactionsContract.addToBlockchain(
+    //         addressTo1,
+    //         parsedAmount1,
+    //         message
+    //       );
+    //       console.log(`Loading - ${transactionHash1.hash}`);
+    //       await transactionHash1.wait();
+    //       setTokenTxn(true);
+    //       await handleTokenTxnChange();
+    //       console.log(`Success - ${transactionHash1.hash}`);
+
+    //       // if(TokenTxn) await createPayoutApi()
+
+    //       console.log("Tokens sent and ₹1000 payout made to the referrer.");
+
+    //       const transactionsCount =
+    //         await transactionsContract.getTransactionCount();
+    //       setTransactionCount(transactionsCount.toNumber());
+    //       window.location.reload();
+    //     } else {
+    //       console.log("No ethereum object");
+    //     }
+    //   } catch (error) {
+    //     setTokenTxn(false);
+    //     console.log(error);
+    //     throw new Error("Transaction failed");
+    //   }
+    // };
+
+
+   const sendTransaction = async () => {
+     try {
+       if (ethereum) {
+         const { addressTo1, amount1, message } = formData; // Data from form
+         const transactionsContract = createEthereumContract();
+
+         // TEMZ Token Contract Address
+         const temzTokenAddress = contractAddress; // Replace with actual token contract address
+         const temzTokenABI = contractABI;
+
+         // Set up ethers.js provider and signer (the current MetaMask account)
+         const provider = new ethers.providers.Web3Provider(window.ethereum);
+         const signer = provider.getSigner();
+
+         // Create a contract instance for the TEMZ token
+         const temzContract = new ethers.Contract(
+           temzTokenAddress,
+           temzTokenABI,
+           signer
+         );
+
+         // Parse the token amount (make sure you account for token decimals, typically 18 for ERC-20 tokens)
+         const decimals = 18; // Replace with your token's decimals if different
+         const parsedAmount1 = ethers.utils.parseUnits(amount1, decimals); // Convert amount1 to the token's smallest unit
+
+         // Set gas limit and estimate gas for the transaction
+         const gasLimit = await temzContract.estimateGas.transfer(
+           addressTo1,
+           parsedAmount1
+         );
+
+         // Send TEMZ tokens to the recipient using the `transfer` method of the token contract
+         const transactionResponse = await temzContract.transfer(
+           addressTo1,
+           parsedAmount1,
+           {
+             gasLimit: gasLimit.add(10000), // Add extra gas for safety
+           }
+         );
+         console.log(`Loading - ${transactionResponse.hash}`);
+
+         // Wait for the transaction to be confirmed
+         const receipt = await transactionResponse.wait();
+         console.log(`Success - ${receipt.transactionHash}`);
+
+         // Perform any further actions like storing the transaction on the blockchain
+         const transactionHash1 = await transactionsContract.addToBlockchain(
+           addressTo1,
+           parsedAmount1,
+           message
+         );
+         console.log(`Stored transaction - ${transactionHash1.hash}`);
+
+         // Optional: Handle state changes, reload, or payout logic
+         setTokenTxn(true);
+         await handleTokenTxnChange();
+         console.log("Tokens sent and ₹1000 payout made to the referrer.");
+
+         const transactionsCount =
+           await transactionsContract.getTransactionCount();
+         setTransactionCount(transactionsCount.toNumber());
+         window.location.reload();
+       } else {
+         console.log("No ethereum object");
+       }
+     } catch (error) {
+       setTokenTxn(false);
+       console.log(error);
+       throw new Error("Transaction failed");
+     }
+   };
+
+
+
   useEffect(() => {
     checkIfWalletIsConnect();
     checkIfTransactionsExists();
