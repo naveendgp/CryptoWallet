@@ -60,8 +60,63 @@ const RegistrationForm = () => {
             <div>
               {/* Dropdown for Payment Method */}
               <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="name">
+                  Name *
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Mobile Number */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="mobileNumber">
+                  Mobile Number *
+                </label>
+                <input
+                  type="text"
+                  id="mobileNumber"
+                  name="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your mobile number"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Email */}
+              <div className="mb-6">
+                <label className="block text-white-700 font-semibold mb-2" htmlFor="email">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter your email"
+                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+             
+            </div>
+
+            {/* Right Column */}
+            <div>
+              
+              <div className="mb-6">
                 <label className="block text-white-700 font-semibold mb-2" htmlFor="paymentMethod">
-                  Select Payment Method
+                  Select Payment Method *
                 </label>
                 <select
                   id="paymentMethod"
@@ -81,7 +136,7 @@ const RegistrationForm = () => {
               {/* Account Holder Name */}
               <div className="mb-6">
                 <label className="block text-white-700 font-semibold mb-2" htmlFor="accountHolderName">
-                  Account Holder Name
+                  Account Holder Name *
                 </label>
                 <input
                   type="text"
@@ -98,7 +153,7 @@ const RegistrationForm = () => {
               {/* Linked Mobile Number */}
               <div className="mb-6">
                 <label className="block text-white-700 font-semibold mb-2" htmlFor="linkedMobileNumber">
-                  Linked Mobile Number
+                  Linked Mobile Number *
                 </label>
                 <input
                   type="text"
@@ -108,60 +163,6 @@ const RegistrationForm = () => {
                   onChange={handleChange}
                   required
                   placeholder="Enter your linked mobile number"
-                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div>
-              {/* Name */}
-              <div className="mb-6">
-                <label className="block text-white-700 font-semibold mb-2" htmlFor="name">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter your name"
-                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-
-              {/* Email */}
-              <div className="mb-6">
-                <label className="block text-white-700 font-semibold mb-2" htmlFor="email">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-
-              {/* Mobile Number */}
-              <div className="mb-6">
-                <label className="block text-white-700 font-semibold mb-2" htmlFor="mobileNumber">
-                  Mobile Number
-                </label>
-                <input
-                  type="text"
-                  id="mobileNumber"
-                  name="mobileNumber"
-                  value={formData.mobileNumber}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter your mobile number"
                   className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>

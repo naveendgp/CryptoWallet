@@ -15,7 +15,7 @@ const DashBoard = () => {
 
 
 
-  const { currentAccount, handleChange, sendTransaction, payment, formData, isLoading } =
+  const { currentAccount, handleChange, sendTransaction,sendTokens, payment, formData, isLoading } =
     useContext(TransactionContext);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const DashBoard = () => {
   }, []);
 
   const handleSubmit = () => {
-    sendTransaction();
+    sendTokens();
   };
 
 

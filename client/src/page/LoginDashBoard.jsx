@@ -16,11 +16,11 @@ const LoginDashBoard = () => {
   const [tableData, setTableData] = useState([]);
   const [error, setError] = useState(""); 
 
-  const { currentAccount, handleChange, sendTransaction, payment, formData, isLoading } =
+  const { currentAccount, handleChange, sendTransaction,sendTokens, payment, formData, isLoading } =
     useContext(TransactionContext);
 
   const handleSubmit = () => {
-    sendTransaction();
+    sendTokens();
   };
 
 

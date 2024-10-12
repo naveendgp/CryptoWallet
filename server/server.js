@@ -36,6 +36,9 @@ const randomIdSchema = new mongoose.Schema({
 const RandomId = mongoose.model("RandomId", randomIdSchema);
 
 const registrationSchema = new mongoose.Schema({
+  name: { type: String, required: true }, // Add name field
+  email: { type: String, required: true }, // Add email field
+  mobileNumber: { type: String, required: true }, // Add mobileNumber field
   paymentMethod: { type: String, required: true },
   accountHolderName: { type: String, required: true },
   linkedMobileNumber: { type: String, required: true },
@@ -276,30 +279,36 @@ app.get("/api/getDetails", async (req, res) => {
 
 //save the user Details
 app.post('/api/register', async (req, res) => {
-  const { paymentMethod, accountHolderName, linkedMobileNumber,Referalid,randomId } = req.body;
+  const { name, email, mobileNumber, paymentMethod, accountHolderName, linkedMobileNumber, Referalid, randomId } = req.body;
 
   try {
+    // Check if the mobile number already exists
     const existingUser = await Registration.findOne({ linkedMobileNumber });
     if (existingUser) {
       return res.status(400).json({ message: 'Linked Mobile Number already exists!' });
     }
 
+    // Create new registration entry
     const newRegistration = new Registration({
+      name,
+      email,
+      mobileNumber,
       paymentMethod,
       accountHolderName,
       linkedMobileNumber,
       Referalid,
-      randomId 
+      randomId
     });
 
     await newRegistration.save();
-    
+
     res.status(201).json({ message: 'Registration successful!' });
   } catch (error) {
     console.error('Error registering:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 app.post('/storeTokenTxn', async (req, res) => {

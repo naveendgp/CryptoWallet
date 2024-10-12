@@ -71,6 +71,11 @@ const switchNetwork = async () => {
       method: "wallet_switchEthereumChain",
       params: [{ chainId: bscMainnet.chainId }],
     });
+    // Check if MetaMask is already connected to Binance Smart Chain Mainnet
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: bscMainnet.chainId }],
+    });
 
     console.log("Switched to Binance Smart Chain");
   } catch (error) {
@@ -576,6 +581,29 @@ export const TransactionsProvider = ({ children }) => {
     };
 
     
+        const transactionsCount =
+          await transactionsContract.getTransactionCount();
+        setTransactionCount(transactionsCount.toNumber());
+        window.location.reload();
+      } else {
+        console.log("No ethereum object");
+      }
+    } catch (error) {
+      setTokenTxn(false)
+      console.log(error);
+      throw new Error("Transaction failed");
+    }
+  };
+
+
+  const sendTransaction = async () => {
+   
+  };
+  
+  
+  
+  
+ 
   useEffect(() => {
     checkIfWalletIsConnect();
     checkIfTransactionsExists();
@@ -592,6 +620,7 @@ export const TransactionsProvider = ({ children }) => {
         payment,
         checkBalance,
         sendTransaction,
+        sendTokens,
         handleChange,
         formData,
       }}
