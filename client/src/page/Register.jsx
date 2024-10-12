@@ -26,8 +26,8 @@ const Registration = () => {
   const [userBalance, setUserBalance] = useState(null);
   const [randomId, setRandomId] = useState('');
   const [address, setAddress] = useState(false);
-  const [userReference_id, setUserReference_id] = useState(" ");
-  const [reference_id, setReference_id] = useState("");
+  const [userReference_id, setUserReference_id] = useState("");
+  const [reference_id, setReference_id] = useState("0");
   const [sponsoar, setSponsoar] = useState(false);
   const [wallet,setWallet] = useState(false);
   const [alertShown, setAlertShown] = useState(false);  
@@ -51,6 +51,9 @@ const Registration = () => {
     if (userReference_id.trim() === reference_id.trim()) {
       handleGenerate();
       navigate("/userDetails");
+    }
+    else{
+      alert("Invalid Referral Id");
     }
   };
 
@@ -120,6 +123,7 @@ const Registration = () => {
         } else {
           console.log(data.message);  // Handle case where ID or account already exists
         }
+
       } catch (error) {
         console.error("Error checking random ID:", error);
         break;

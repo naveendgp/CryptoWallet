@@ -44,10 +44,7 @@ const Welcome = () => {
             Empowering <br /> Decentralization
           </h1> */}
           <img src={welcomImage} alt="" style={{height:"350px",width:"350px"}} />
-          <p className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
-            we believe in the power of decentralization to reshape industries,
-            empower communities, and redefine wealth distribution.
-          </p>
+         
           {!currentAccount && (
             <button
               type="button"
@@ -62,7 +59,7 @@ const Welcome = () => {
             </button>
           )}
 
-          <div className="grid sm:grid-cols-3 grid-cols-2 w-full mt-10">
+          <div className="grid sm:grid-cols-3 grid-cols-2 w-full mt-10 mr-[500px]">
             <div className={`rounded-tl-2xl ${companyCommonStyles}`}>
               Reliability
             </div>

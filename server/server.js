@@ -116,6 +116,15 @@ app.get("/api/account", async (req, res) => {
   }
 });
 
+app.get('/api/total-registrations', async (req, res) => {
+  try {
+    const totalCount = await Registration.countDocuments({});
+    res.status(200).json({ total: totalCount });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching data', error });
+  }
+});
+
 app.get("/api/getDetails", async (req, res) => {  
   const { randomId } = req.query;   
   console.log("Received randomId:", randomId); // Log the received randomId  

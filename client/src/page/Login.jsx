@@ -3,13 +3,30 @@ import "./Login.css";
 import { Link } from "react-router-dom";
 import { FaInfoCircle, FaCopy } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import logo from "../../images/logo.png"
 
 const Login = () => {
   const[userReference_id,setUserReference_id] = useState(" ");
   const[reference_id,setReference_id] = useState("");
+  const [totalRegistrations, setTotalRegistrations] = useState(0); // State to store total registrations
   const navigate = useNavigate();
 
   console.log()
+
+  useEffect(() => {
+    // Fetch the total registrations from the API when the component mounts
+    const fetchTotalRegistrations = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/total-registrations");
+        const data = await response.json();
+        setTotalRegistrations(data.total); // Update state with the total count
+      } catch (error) {
+        console.error("Error fetching total registrations:", error);
+      }
+    };
+
+    fetchTotalRegistrations();
+  }, []);
 
   const handleCheck = async (id) => {
     try {
@@ -62,7 +79,7 @@ const Login = () => {
             </div>
           </div>
           <img
-            src="https://placehold.co/150x150"
+            src={logo}
             alt="The Rich Crowd Icon"
             className="h-24 mt-4 md:mt-0"
           />
@@ -105,37 +122,31 @@ const Login = () => {
                 <span>
                   Members total <FaInfoCircle />
                 </span>
-                <span>
-                  7911 <span className="text-green-500">↑ 109</span>
-                </span>
+                <span>{totalRegistrations}</span> 
               </div>
               <div className="flex justify-between items-center mt-2">
                 <span>
                   Members received, Temz <FaInfoCircle />
                 </span>
-                <span>
-                  632625 <span className="text-green-500">↑ 5760</span>
-                </span>
+                <span>{totalRegistrations*100}</span> {/* Display total registrations from API */}
               </div>
             </div>
             <div className="bg-gray-800 p-4 rounded-lg w-full md:w-1/2 md:ml-2">
               <div className="flex justify-between items-center">
                 <span>The Climate Crew Contracts</span>
                 <span className="text-xs">
-                  0x3Ffe617386F9E596D97bC26b3F104596E2bDc1A1 <FaCopy />
+                0xa06D78837e5dFBd09C5Be990832C5d3f13a604c1 <FaCopy />
                 </span>
               </div>
               <div className="flex justify-between items-center mt-2">
                 <span>Transactions made</span>
                 <span>
-                  11403 <span className="text-green-500">↑ 142</span>
+                  0
                 </span>
               </div>
               <div className="flex justify-between items-center mt-2">
                 <span>Turnover, Temz</span>
-                <span>
-                  632685 <span className="text-green-500">↑ 5760</span>
-                </span>
+                <span>{totalRegistrations*100}</span> {/* Display total registrations from API */}
               </div>
             </div>
           </div>
