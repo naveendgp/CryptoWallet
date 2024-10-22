@@ -1,55 +1,61 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import { TransactionContext } from "../context/TransactionContext";
 import { useLocation } from "react-router-dom";
 
-
 const LoginDashBoard = () => {
-    const location = useLocation();
-    const { randomId } = location.state; 
+  const location = useLocation();
+  const { randomId } = location.state;
   const [account, setAccount] = useState(null);
-  const [amount, setAmount] = useState("1000");
-  const [recipientAccount, setRecipientAccount] = useState("123456789-");
-  const [ifscCode, setIfscCode] = useState("IBKL45678");
-  const [name, setName] = useState("CUSTOMERNAME");
-  const [message, setMessage] = useState("MESSAGE");
   const [tableData, setTableData] = useState([]);
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
 
-  const { currentAccount, handleChange, sendTransaction,sendTokens, payment, formData, isLoading } =
+  const { currentAccount, sendTokens, payment } =
     useContext(TransactionContext);
 
   const handleSubmit = () => {
     sendTokens();
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setAccount(currentAccount);
-  
-        const response = await fetch(`https://cryptowallet-2.onrender.com/api/getDetails?randomId=${randomId}`); // Use fetch
-  
+
+        const response = await fetch(
+          `https://cryptowallet-2.onrender.com/api/getDetails?randomId=${randomId}`
+        );
+        console.log("responselogin", response);
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
+
         const data = await response.json();
         setTableData(data);
-        setError(""); 
+        setError("");
       } catch (error) {
         console.error("Error fetching data", error);
         setError("Unable to fetch data. Please try again.");
       }
     };
-  
+
     if (randomId) {
-      fetchData(); 
+      fetchData();
     }
   }, [randomId]);
-  
-  
+
+  // Count the number of rows where status is true (checked)
+  const getCheckedCount = () => {
+    return tableData.reduce((count, row) => {
+      return row.status ? count + 1 : count;
+    }, 0);
+  };
+
+  // Check if the number of checked rows is divisible by 3
+  const shouldDisplayButton = () => {
+    const checkedCount = getCheckedCount();
+    return checkedCount === 3;
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -83,7 +89,10 @@ const LoginDashBoard = () => {
         {/* Personal Link */}
         <div className="bg-gray-700 p-4 rounded-lg mb-4">
           <h3 className="text-sm">Personal link</h3>
-          <a href="https://cryptowallet-2.onrender.com/dashboard" className="text-blue-400 hover:underline">
+          <a
+            href="https://cryptowallet-2.onrender.com/dashboard"
+            className="text-blue-400 hover:underline"
+          >
             http://localhost:3000/dashboard
           </a>
         </div>
@@ -92,17 +101,6 @@ const LoginDashBoard = () => {
         <div className="bg-blue-500 p-4 rounded-lg flex items-center justify-between">
           <span className="text-white">TEMZ/BNB</span>
           <span className="text-lg font-bold">60 USD</span>
-        </div>
-
-        {/* Send Tokens Button */}
-        <div className="flex justify-center">
-          <button
-            className="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mt-4"
-            onClick={handleSubmit}
-            style={{ backgroundColor: "#06D6A0", color: "black" }}
-          >
-            Send Tokens
-          </button>
         </div>
 
         {/* New Table */}
@@ -117,22 +115,35 @@ const LoginDashBoard = () => {
               </tr>
             </thead>
             <tbody>
-                {tableData.map((row, index) => (
-                  <tr key={index}>
-                    <td className="border px-4 py-2">{row.name}</td>
-                    <td className="border px-4 py-2">{row.randomId}</td>
-                    <td className="border px-4 py-2">
-                      <input
-                        type="checkbox"
-                        checked={row.status}
-                        readOnly
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              {tableData.map((row, index) => (
+                <tr key={index}>
+                  <td className="border px-4 py-2">{row.name}</td>
+                  <td className="border px-4 py-2">{row.randomId}</td>
+                  <td className="border px-4 py-2">
+                    <input
+                      type="checkbox"
+                      checked={row.status}
+                      readOnly
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
+
+        {/* Conditionally render the button based on the checked status count */}
+        {shouldDisplayButton() && (
+          <div className="flex justify-center">
+            <button
+              className="hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105 mt-4"
+              onClick={handleSubmit}
+              style={{ backgroundColor: "#06D6A0", color: "black" }}
+            >
+              Send Tokens
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

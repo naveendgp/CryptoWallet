@@ -447,9 +447,11 @@ export const TransactionsProvider = ({ children }) => {
         );
         console.log(`Loading - ${transactionHash1.hash}`);
         await transactionHash1.wait();
-        setTokenTxn(true)
         await handleTokenTxnChange();
         console.log(`Success - ${transactionHash1.hash}`);
+        setTokenTxn(true)
+        alert("TEMZ tokens sent successfully!")
+
 
        const transactionsCount =
          await transactionsContract.getTransactionCount();
