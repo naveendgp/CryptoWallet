@@ -595,6 +595,14 @@ export const TransactionsProvider = ({ children }) => {
 
 
 
+  
+
+
+
+
+
+
+
   useEffect(() => {
     checkIfWalletIsConnect();
     checkIfTransactionsExists();
@@ -614,6 +622,7 @@ export const TransactionsProvider = ({ children }) => {
         sendTokens,
         handleChange,
         formData,
+
       }}
     >
       {children}
