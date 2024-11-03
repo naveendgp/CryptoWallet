@@ -18,20 +18,21 @@ export default function Dashboard() {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); 
   const [registrations, setRegistrations] = useState([]); 
-  const [hiddenRows, setHiddenRows] = useState({}); 
+  const [markedRows, setMarkedRows] = useState({}); 
 
-  // Fetch hidden rows from localStorage when the component mounts
+  // Fetch marked rows from localStorage when the component mounts
   useEffect(() => {
-    const savedHiddenRows = localStorage.getItem("hiddenRows");
-    if (savedHiddenRows) {
-      setHiddenRows(JSON.parse(savedHiddenRows));
+    const savedMarkedRows = localStorage.getItem("markedRows");
+    if (savedMarkedRows) {
+      setMarkedRows(JSON.parse(savedMarkedRows));
     }
   }, []);
 
+  // Fetch registration data from the API when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/dashboard"); 
+        const response = await fetch("https://cryptowallet-2.onrender.com/api/dashboard"); 
         const data = await response.json();
         setRegistrations(data); 
       } catch (error) {
@@ -42,14 +43,15 @@ export default function Dashboard() {
     fetchData();
   }, []); 
 
+  // Handle checkbox change to mark rows with color change
   const handleCheckboxChange = (id) => {
-    setHiddenRows((prev) => {
-      const updatedHiddenRows = { ...prev, [id]: !prev[id] };
+    setMarkedRows((prev) => {
+      const updatedMarkedRows = { ...prev, [id]: !prev[id] };
       
-      // Save updated hiddenRows to localStorage
-      localStorage.setItem("hiddenRows", JSON.stringify(updatedHiddenRows));
+      // Save updated markedRows to localStorage
+      localStorage.setItem("markedRows", JSON.stringify(updatedMarkedRows));
       
-      return updatedHiddenRows;
+      return updatedMarkedRows;
     });
   };
 
@@ -107,54 +109,54 @@ export default function Dashboard() {
                 )}
                 {!isSmallScreen && (
                   <TableCell style={{ color: "#2a86f3" }}>
-                    Account Number
+                    Address
                   </TableCell>
                 )}
                 <TableCell style={{ color: "#2a86f3" }}>Referral ID</TableCell>
+                <TableCell style={{ color: "#2a86f3" }}>Type</TableCell>
                 <TableCell style={{ color: "#2a86f3" }}>
                   Transferred
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {registrations
-                .filter((registration) => !hiddenRows[registration.id]) // Only show rows that are not hidden
-                .map((registration) => (
-                  <TableRow key={registration.id} style={{ color: "white" }}>
+              {registrations.map((registration) => (
+                <TableRow key={registration.id} style={{ color: "white" }}>
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.name}
+                  </TableCell>
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.mobileNumber}
+                  </TableCell>
+                  {!isSmallScreen && (
                     <TableCell style={{ color: "#ffffff" }}>
-                      {registration.name}
+                      {registration.email}
                     </TableCell>
+                  )}
+                  {!isSmallScreen && (
                     <TableCell style={{ color: "#ffffff" }}>
-                      {registration.contact}
+                      {registration.address}
                     </TableCell>
-                    {!isSmallScreen && (
-                      <TableCell style={{ color: "#ffffff" }}>
-                        {registration.email}
-                      </TableCell>
+                  )}
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.randomId}
+                  </TableCell>
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.paymentMethod}
+                  </TableCell>
+                  <TableCell style={{ color: "#ffffff" }}>
+                    {registration.TokenTxn && (
+                      <Checkbox
+                        checked={markedRows[registration.randomId] || false}
+                        onChange={() => handleCheckboxChange(registration.randomId)} // Toggle checkbox
+                        style={{
+                          color: markedRows[registration.randomId] ? "green" : "white", // Change to green if checked
+                        }}
+                      />
                     )}
-                    {!isSmallScreen && (
-                      <TableCell style={{ color: "#ffffff" }}>
-                        {registration.accountNumber}
-                      </TableCell>
-                    )}
-                    <TableCell style={{ color: "#ffffff" }}>
-                      {registration.randomId}
-                    </TableCell>
-                    <TableCell style={{ color: "#ffffff" }}>
-                      {registration.TokenTxn && (
-                        <Checkbox
-                          checked={hiddenRows[registration.id] || false}
-                          onChange={() => handleCheckboxChange(registration.id)} // Toggle hidden state
-                          style={{
-                            backgroundColor: hiddenRows[registration.id]
-                              ? "green" // Set checkbox background color to green if checked
-                              : "white", // Default color
-                          }}
-                        />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
