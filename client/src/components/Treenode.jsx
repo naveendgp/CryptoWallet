@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import profile from "../../images/profile.png"; // Make sure to update the path to your profile image
 
-const TreeNode = ({ node }) => {
+const TreeNode = ({node}) => {
   // Function to determine background color based on node ID
+
+
   const getBackgroundColor = (id) => {
     const colors = {
       1: "bg-green-500",
@@ -14,22 +17,27 @@ const TreeNode = ({ node }) => {
     return colors[id] || "bg-gray-800"; // Default color if ID not found
   };
 
+
+  const randomId = localStorage.getItem("rootID")
+ 
+  console.log(randomId)
+  
   return (
     <div className="flex flex-col items-center">
       {/* Node Box */}
       <div
         className={`text-white p-6 rounded-lg mx-5 shadow-lg flex flex-col items-center ${getBackgroundColor(
-          node.id
+          randomId
         )}`}
       >
         <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center">
           <img src={profile} alt="Profile" className="w-16 h-16 rounded-full" />
         </div>
-        <span className="mt-2 text-lg font-semibold">{node.id}</span>
+        <span className="mt-2 text-lg font-semibold">{node.randomId}</span>
         {/* Render extra data if available */}
         {node.name && <span className="text-sm mt-1">{node.name}</span>}
         {node.level && (
-          <span className="text-sm mt-1">Level: {node.level}</span>
+          <span className="text-sm mt-1">Level: {node.status}</span>
         )}
       </div>
 

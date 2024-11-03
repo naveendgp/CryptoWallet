@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import Sidebar from "../components/SideBar";
+import Sidebar from "../components/Sidebar";
 import { TransactionContext } from "../context/TransactionContext";
 
 const DashBoard = () => {

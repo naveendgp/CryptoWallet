@@ -10,7 +10,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 
-const Sidebar = () => {
+const Sidebar = ({randomId}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -31,7 +31,7 @@ const Sidebar = () => {
             <ul className="space-y-4">
               <li>
                 <Link
-                  to="/dashboard"
+                  to="/logindashboard"
                   className="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md"
                 >
                   <FaHome className="mr-3" /> Home

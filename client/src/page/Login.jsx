@@ -55,6 +55,7 @@ const Login = () => {
     if (userReference_id === reference_id) {
       navigate("/logindashboard", { state: { randomId: userReference_id } });
     }
+    localStorage.setItem("rootID",userReference_id)
   };
   
 
