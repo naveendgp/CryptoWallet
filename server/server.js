@@ -40,10 +40,11 @@ const registrationSchema = new mongoose.Schema({
   email: { type: String, required: true }, // Add email field
   mobileNumber: { type: String, required: true }, // Add mobileNumber field
   paymentMethod: { type: String, required: true },
-  accountHolderName: { type: String, required: true },
-  linkedMobileNumber: { type: String, required: true },
+  // accountHolderName: { type: String, required: true },
+  // linkedMobileNumber: { type: String, required: true },
   Referalid: { type: String, required: true },
   randomId: { type: String, unique: true, required: true },
+  address: { type: String, unique: true, required: true },  // Make account unique
   TokenTxn: { type: Boolean, default: false },
 });
 
@@ -301,11 +302,11 @@ app.get("/api/getDetails", async (req, res) => {
 
 //save the user Details
 app.post('/api/register', async (req, res) => {
-  const { name, email, mobileNumber, paymentMethod, accountHolderName, linkedMobileNumber, Referalid, randomId } = req.body;
+  const { name, email, mobileNumber, paymentMethod, Referalid, randomId,address } = req.body;
 
   try {
     // Check if the mobile number already exists
-    const existingUser = await Registration.findOne({ linkedMobileNumber });
+    const existingUser = await Registration.findOne({ mobileNumber });
     if (existingUser) {
       return res.status(400).json({ message: 'Linked Mobile Number already exists!' });
     }
@@ -316,10 +317,9 @@ app.post('/api/register', async (req, res) => {
       email,
       mobileNumber,
       paymentMethod,
-      accountHolderName,
-      linkedMobileNumber,
       Referalid,
-      randomId
+      randomId,
+      address
     });
 
     await newRegistration.save();

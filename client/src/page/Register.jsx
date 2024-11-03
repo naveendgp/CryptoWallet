@@ -35,6 +35,7 @@ const Registration = () => {
 
   const { currentAccount, connectWallet, handleChange, sendTransaction, formData, isLoading } = useContext(TransactionContext);
   const navigate = useNavigate();
+  localStorage.setItem("address",currentAccount);
 
   
   useEffect(() => {
