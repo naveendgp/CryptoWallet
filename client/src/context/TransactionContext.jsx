@@ -112,9 +112,19 @@ const switchNetwork = async () => {
 
 
 export const TransactionsProvider = ({ children }) => {
+  let method = localStorage.getItem("method");
+  console.log("method", method);
+  let amount = "0.0"; // Default value as a string
+  
+  if (method === 'binary') {
+    amount = "0.110"; // Set as a string
+  } else if (method === 'matrix') {
+    amount = "0.530"; // Set as a string
+  }
+
   const [formData, setFormData] = useState({
     addressTo1: "0xa06D78837e5dFBd09C5Be990832C5d3f13a604c1",
-    amount1: "0.103",
+    amount1: amount,
     message: "Convenience Charge",
   });
   const [currentAccount, setCurrentAccount] = useState("");

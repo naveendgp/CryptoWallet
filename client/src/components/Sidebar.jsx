@@ -31,7 +31,7 @@ const Sidebar = ({randomId}) => {
             <ul className="space-y-4">
               <li>
                 <Link
-                  to="/logindashboard"
+                  to="/dashboard"
                   className="flex items-center p-2 text-gray-300 hover:bg-gray-700 rounded-md"
                 >
                   <FaHome className="mr-3" /> Home

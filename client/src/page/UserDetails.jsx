@@ -21,12 +21,16 @@ const RegistrationForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault(); 
     const Referalid = localStorage.getItem('ReferalId');
     let randomId = localStorage.getItem("randomId")
     const address = localStorage.getItem("address");
-    randomId = `m_${randomId}`;
-
+    localStorage.setItem("method",formData.paymentMethod);
+    if (formData.paymentMethod === 'binary') {
+      randomId = randomId;
+    } else if (formData.paymentMethod === 'matrix') {
+      randomId = `m_${randomId}`;
+    }
     const finalFormData = {
       ...formData,
       Referalid, // Add the ReferalId from localStorage
@@ -132,7 +136,6 @@ const RegistrationForm = () => {
                   <option value="">Choose method</option>
                   <option value="binary">BINARY</option>
                   <option value="matrix">MATRIX</option>
-                  <option value="normal">NORMAL</option>
                 </select>
               </div>
 

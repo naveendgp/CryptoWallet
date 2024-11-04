@@ -95,7 +95,7 @@ const DashBoard = () => {
           <div className="bg-gray-700 p-3 rounded-lg flex items-center justify-between mb-4">
             <h3 className="text-sm">Personal link</h3>
             <a
-              href="https://therichcrowd.com/registration/RichCrowd"
+              href="https://climatecrew.info/logindashboard"
               className="text-yellow-500 text-sm hover:underline"
             >
               https://climatecrew.info/logindashboard
