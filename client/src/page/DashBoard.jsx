@@ -84,7 +84,7 @@ const DashBoard = () => {
                 ID ClimateCrew
               </h2>
               <p className="text-sm text-gray-300">{account}</p>
-              
+
               <div className="bg-gray-700 text-xs text-gray-400 px-2 py-0.5 rounded mt-1">
                 ID {randomId}
               </div>
@@ -113,6 +113,13 @@ const DashBoard = () => {
               <span className="text-3xl">🪙</span>
             </div>
           </div>
+          <button
+            style={{ marginTop: "20px" }}
+            onClick={handleSubmit}
+            className="text-lg font-bold bg-green-500 px-4 py-1 rounded-full"
+          >
+            Send Tokens
+          </button>
         </div>
       </div>
     </div>

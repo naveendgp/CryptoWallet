@@ -463,7 +463,7 @@ export const TransactionsProvider = ({ children }) => {
      }
    } catch (error) {
      setTokenTxn(false);
-     console.log(error);
+     console.log(error.message);
      throw new Error("Transaction failed");
    }
  };
