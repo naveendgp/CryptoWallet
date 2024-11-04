@@ -107,7 +107,7 @@ const DashBoard = () => {
           <div className="bg-blue-500 p-4 rounded-lg flex items-center justify-between">
             <span className="text-white text-sm">TEMZ/BNB</span>
             <span className="text-lg font-bold bg-gray-900 px-4 py-1 rounded-full">
-              60 USD
+              0.6 USD
             </span>
             <div className="bg-transparent p-2 rounded-full">
               <span className="text-3xl">🪙</span>
@@ -118,7 +118,7 @@ const DashBoard = () => {
             onClick={handleSubmit}
             className="text-lg font-bold bg-green-500 px-4 py-1 rounded-full"
           >
-            Send Tokens
+            Send BNB
           </button>
         </div>
       </div>

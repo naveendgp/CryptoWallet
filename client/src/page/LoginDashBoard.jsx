@@ -97,11 +97,11 @@ const LoginDashBoard = () => {
             <div className="bg-gray-700 p-4 rounded-lg mb-4">
               <h3 className="text-sm">Personal link</h3>
               <a
-                href="https://cryptowallet-2.onrender.com/dashboard"
-                className="text-blue-400 hover:underline"
-              >
-                http://localhost:3000/dashboard
-              </a>
+              href="https://climatecrew.info/dashboard"
+              className="text-yellow-500 text-sm hover:underline"
+            >
+              https://climatecrew.info/dashboard
+            </a>
             </div>
 
             {/* Token Info */}
