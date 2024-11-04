@@ -57,6 +57,29 @@ const Login = () => {
     }
     localStorage.setItem("rootID",userReference_id)
   };
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [password, setPassword] = useState('');
+
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submitted Password:', password);
+    if(password == "vaishnav@123")
+    {
+      navigate("/admin");
+    }
+    else{
+      togglePopup();
+    }
+  };
   
 
   return (
@@ -80,10 +103,43 @@ const Login = () => {
             </div>
           </div>
           <img
-            src={logo}
-            alt="The Rich Crowd Icon"
-            className="h-24 mt-4 md:mt-0"
-          />
+        src={logo}
+        alt="The Rich Crowd Icon"
+        className="h-24 mt-4 md:mt-0 cursor-pointer"
+        onClick={togglePopup}
+      />
+
+{isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-8 rounded-lg shadow-lg text-white">
+            <h2 className="text-xl mb-4">Enter Password</h2>
+            <form onSubmit={handleSubmit}>
+              <input
+                type="password"
+                placeholder="Your Password"
+                value={password}
+                onChange={handlePasswordChange}
+                className="border border-white rounded p-2 mb-4 w-full text-black"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="bg-white text-black px-4 py-2 rounded mr-2"
+                >
+                  Submit
+                </button>
+                <button
+                  type="button"
+                  className="bg-white text-black px-4 py-2 rounded"
+                  onClick={togglePopup}
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
         </section>
 
         {/* Account Preview Section */}
