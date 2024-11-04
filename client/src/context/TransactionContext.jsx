@@ -110,12 +110,28 @@ const switchNetwork = async () => {
   }
 };
 
+const [allData, setAllData] = useState([]); // State to store all data
+
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/getAllData");
+      setAllData(response.data);
+    } catch (error) {
+      console.error("Error fetching all data:", error);
+    }
+  };
+
+  fetchData();
+}, []); 
+
 
 export const TransactionsProvider = ({ children }) => {
   let method = localStorage.getItem("method");
-  let address = String(localStorage.getItem('wallet-address'));
-let binary = String(localStorage.getItem("binary"));
-let matrix = String(localStorage.getItem("matrix"));
+  let address = String(allData.walletaddress);
+let binary = String(allData.binary);
+let matrix = String(allData.matrix);
   console.log("method", method);
   let amount = "0.0"; 
   if (method === 'binary') {

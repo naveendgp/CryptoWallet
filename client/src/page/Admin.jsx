@@ -1,32 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaLessThan } from "react-icons/fa";
 
 const Admin = () => {
   const [formData, setFormData] = useState({
-    name: "", 
-    email: "", 
-    mobileNumber: "", 
+    walletAddress: "",
+    binary: "",
+    matrix: "",
   });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    localStorage.setItem('wallet-address', formData.name);
-    localStorage.setItem("binary", formData.mobileNumber);
-    localStorage.setItem("matrix", formData.email);
-    // Optionally navigate or handle submission logic here
-    // navigate('/some-route'); // Uncomment if you want to navigate after submit
-    navigate("/")
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:5000/submit", formData);
+      console.log(response.data.message);
+      navigate("/");
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+    }
   };
 
   return (
@@ -36,57 +36,52 @@ const Admin = () => {
           Admin Management
         </h2>
         <form onSubmit={handleSubmit}>
-          <div>
-            {/* Left Column */}
-            <div>
-              {/* Wallet Address */}
-              <div className="mb-6">
-                <label className="block text-white-700 font-semibold mb-2" htmlFor="name">
-                  Wallet Address
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your wallet address"
-                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
+          {/* Wallet Address */}
+          <div className="mb-6">
+            <label className="block text-white-700 font-semibold mb-2" htmlFor="walletAddress">
+              Wallet Address
+            </label>
+            <input
+              type="text"
+              id="walletAddress"
+              name="walletAddress"
+              value={formData.walletAddress}
+              onChange={handleChange}
+              placeholder="Enter your wallet address"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
 
-              {/* Binary Value */}
-              <div className="mb-6">
-                <label className="block text-white-700 font-semibold mb-2" htmlFor="mobileNumber">
-                  Binary Value
-                </label>
-                <input
-                  type="text"
-                  id="binary"
-                  name="mobileNumber"
-                  value={formData.mobileNumber}
-                  onChange={handleChange}
-                  placeholder="Enter your binary value"
-                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
+          {/* Binary Value */}
+          <div className="mb-6">
+            <label className="block text-white-700 font-semibold mb-2" htmlFor="binary">
+              Binary Value
+            </label>
+            <input
+              type="text"
+              id="binary"
+              name="binary"
+              value={formData.binary}
+              onChange={handleChange}
+              placeholder="Enter your binary value"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
 
-              {/* Matrix Value (Email) */}
-              <div className="mb-6">
-                <label className="block text-white-700 font-semibold mb-2" htmlFor="email">
-                  Matrix Value (Email)
-                </label>
-                <input
-                  type="text"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-            </div>
+          {/* Matrix Value (Email) */}
+          <div className="mb-6">
+            <label className="block text-white-700 font-semibold mb-2" htmlFor="matrix">
+              Matrix Value (Email)
+            </label>
+            <input
+              type="text"
+              id="matrix"
+              name="matrix"
+              value={formData.matrix}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
           </div>
 
           <div className="flex justify-center items-center">

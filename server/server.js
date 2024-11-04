@@ -52,6 +52,35 @@ const registrationSchema = new mongoose.Schema({
 
 const Registration = mongoose.model('Registration', registrationSchema);
 
+const formSchema = new mongoose.Schema({
+  walletaddress: String,
+  binary: String,
+  matrix: String,
+});
+const FormData = mongoose.model('FormData', formSchema);
+
+
+app.post('/submit', async (req, res) => {
+  try {
+    const newFormData = new FormData(req.body);
+    await newFormData.save();
+    res.status(201).send({ message: 'Form data saved successfully' });
+  } catch (error) {
+    res.status(500).send({ error: 'Error saving form data' });
+  }
+});
+
+app.get('/getAllData', async (req, res) => {
+  try {
+    const data = await FormData.find();
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error fetching form data:', error);
+    res.status(500).json({ message: 'Error fetching form data' });
+  }
+});
+
+
 // Check if the randomId or Account already exists
 app.post("/api/check-random-id", async (req, res) => {
   const { randomId, Account } = req.body;
