@@ -1,31 +1,26 @@
-import React, { useContext, useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TreeNode from "../components/Treenode";
-import Sidebar from '../components/Sidebar'
+import Sidebar from "../components/Sidebar";
+
 const ReferralTree = () => {
-  const [data,setData] = useState([])
+  const [data, setData] = useState([]);
   const randomId = localStorage.getItem("rootID");
 
   useEffect(() => {
-    const randomId = localStorage.getItem("rootID");
     const fetchData = async () => {
       try {
-        setAccount(currentAccount);
-
         const response = await fetch(
           `https://cryptowallet-2.onrender.com/api/getDetails?randomId=${randomId}`
         );
-        console.log("responselogin", response);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const data = await response.json();
-        setData(data);
-        setError("");
+        const fetchedData = await response.json();
+        setData(fetchedData);
       } catch (error) {
         console.error("Error fetching data", error);
-        setError("Unable to fetch data. Please try again.");
       }
     };
 
@@ -34,52 +29,33 @@ const ReferralTree = () => {
     }
   }, [randomId]);
 
+  // Transform flat data into a hierarchical structure for TreeNode
+  const buildTree = (flatData) => {
+    const structuredData = [];
+    flatData.forEach((item, index) => {
+      const node = {
+        ...item,
+        children: flatData.slice(2 * index + 1, 2 * index + 3), // Assigns up to two children
+      };
+      structuredData.push(node);
+    });
+    return structuredData[0]; // Root node
+  };
 
-  // const data = {
-  //   id: "Root",
-  //   children: [
-  //     {
-  //       id: "Node 1",
-  //       children: [
-  //         { id: "Node 1.1", children: [
-            
-  //         ] },
-  //         { id: "Node 1.2", children: [] },
-  //         { id: "Node 1.3", children: [] },
-  //       ],
-  //     },
-     
-  //     {
-  //       id: "Node 2",
-  //       children: [
-  //         { id: "Node 2.1", children: [] },
-  //         { id: "Node 2.2", children: [] },
-  //         { id: "Node 2.3", children: [] },
-  //       ],
-  //     },
-     
-  //     {
-  //       id: "Node 3",
-  //       children: [
-  //         { id: "Node 3.1", children: [] },
-  //         { id: "Node 3.2", children: [] },
-  //         { id: "Node 3.3", children: [] },
-  //       ],
-  //     },
+  const structuredData = buildTree(data);
 
-     
-  //   ],
-  // };
-
- 
   return (
     <div style={{ display: "flex" }}>
       <section>
         <Sidebar />
       </section>
       <section>
-        <div className="flex justify-center items-center min-h-screen  bg-gray-900 text-white">
-          <TreeNode node={data} />
+        <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white">
+          {structuredData ? (
+            <TreeNode node={structuredData} />
+          ) : (
+            <p>Loading...</p>
+          )}
         </div>
       </section>
     </div>

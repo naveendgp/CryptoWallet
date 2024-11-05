@@ -26,16 +26,11 @@ const DashBoard = () => {
 
   useEffect(() => {
     const fetchAccountDetails = async () => {
-      try {
-        const response = await fetch(
-          "https://cryptowallet-2.onrender.com/api/account"
-        );
-        const data = await response.json();
-        setAccount(data.account);
-        setRandomId(data.referralId);
-      } catch (error) {
-        console.error("Error fetching account details:", error);
-      }
+        const accout = localStorage.getItem("address");
+        const id = localStorage.getItem("randomId");
+        setAccount(accout);
+        setRandomId(id);
+      
     };
     fetchAccountDetails();
   }, []);

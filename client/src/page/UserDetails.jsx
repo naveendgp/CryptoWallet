@@ -134,8 +134,8 @@ const RegistrationForm = () => {
                   className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
                   <option value="">Choose method</option>
-                  <option value="binary">BINARY</option>
-                  <option value="matrix">MATRIX</option>
+                  <option value="binary">X2 Program</option>
+                  <option value="matrix">X3 Program</option>
                 </select>
               </div>
 
