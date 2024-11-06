@@ -17,6 +17,9 @@ const LoginDashBoard = () => {
     sendTokens();
   };
 
+
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,8 +57,7 @@ const LoginDashBoard = () => {
 
   // Check if the number of checked rows is divisible by 3
   const shouldDisplayButton = () => {
-    const checkedCount = getCheckedCount();
-    return checkedCount === 3;
+      return true;
   };
 
   return (

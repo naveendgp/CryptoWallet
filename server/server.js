@@ -386,15 +386,22 @@ app.post('/storeTokenTxn', async (req, res) => {
 
 //Dashboard
 
-app.get("/api/dashboard", async (req, res) => {
+app.get("/api/dashboard/:randomId", async (req, res) => {
   try {
-    const registrations = await Registration.find();
-    res.status(200).json(registrations);
+    const { randomId } = req.params;
+    const registration = await Registration.findOne({ randomId });
+
+    if (!registration) {
+      return res.status(404).json({ message: "Registration not found" });
+    }
+
+    res.status(200).json(registration);
   } catch (error) {
-    console.error("Error fetching registrations:", error);
+    console.error("Error fetching registration:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 
 
