@@ -1,13 +1,9 @@
 import React from "react";
-import profile from "../../images/profile.png"; // Make sure to update the path to your profile image
+import profile from "../../images/profile.png"; // Ensure path to profile image is correct
 
 const TreeNode = ({ node }) => {
   const getBackgroundColor = (status) => {
-    const colors = {
-      true: "bg-green-500",
-      false: "bg-gray-800",
-    };
-    return colors[status] || "bg-gray-800"; // Default color if status not found
+    return status ? "bg-green-500" : "bg-gray-800";
   };
 
   return (
@@ -22,12 +18,14 @@ const TreeNode = ({ node }) => {
           <img src={profile} alt="Profile" className="w-16 h-16 rounded-full" />
         </div>
         <span className="mt-2 text-lg font-semibold">{node.randomId}</span>
-        <span className="text-sm mt-1">{node.status ? "Active" : "Inactive"}</span>
+        <span className="text-sm mt-1">
+          {node.status ? "Active" : "Inactive"}
+        </span>
       </div>
 
       {/* Children Nodes */}
       {node.children && node.children.length > 0 && (
-        <div className="flex overflow-x-auto mt-4 space-x-4"> {/* Horizontal scrolling */}
+        <div className="flex overflow-x-auto mt-4 space-x-4">
           {node.children.map((childNode, index) => (
             <TreeNode key={index} node={childNode} />
           ))}
