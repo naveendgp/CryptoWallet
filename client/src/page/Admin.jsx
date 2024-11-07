@@ -21,11 +21,11 @@ const Admin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/submit", formData);
+      const response = await axios.put("http://localhost:5000/submit", formData);
       console.log(response.data.message);
       navigate("/");
     } catch (error) {
-      console.error("Error submitting form data:", error);
+      console.error("Error submitting form data:", error.message);
     }
   };
 

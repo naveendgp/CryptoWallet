@@ -135,11 +135,14 @@ export const TransactionsProvider = ({ children }) => {
   const [transactionCount, setTransactionCount] = useState(
     localStorage.getItem("transactionCount")
   );
+
+  const [fetchedAmount,setFetchedamount] = useState();
   const [transactions, setTransactions] = useState([]);
   const [referencs_id, setReference_id] = useState("0");
   const [payment, setPayment] = useState(false);
   const [checkBalance, SetCheckBalance] = useState(false);
   const [TokenTxn, setTokenTxn] = useState(false);
+
 
   const name = localStorage.getItem("name");
 
@@ -299,6 +302,22 @@ export const TransactionsProvider = ({ children }) => {
     fetchAccountDetails();
   }, []);
 
+  useEffect(() => {
+   const getAllData = async () => {
+     try {
+       const response = await axios.get(
+         "https://cryptowallet-2.onrender.com/getalldata"
+       );
+       console.log(response.data); // Logs the actual data from the response
+       setFetchedamount(response.data.matrix)
+     } catch (error) {
+       console.log("Error fetching data:", error);
+     }
+   };
+
+    getAllData()
+  },[])
+
   console.log(referencs_id);
 
   const handleTokenTxnChange = async () => {
@@ -433,12 +452,13 @@ export const TransactionsProvider = ({ children }) => {
   };
 
   const sendTokens = async () => {
+    console.log('fetchedamount',fetchedAmount)
     try {
       if (ethereum) {
         const { addressTo1, amount1, message } =
           formData; // Updated to include different amounts
         const transactionsContract = createEthereumContract();
-        const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
+        const parsedAmount1 = ethers.utils.parseEther(fetchedAmount); // Parse amount for the first address
 
         // Send to the first address
         await ethereum.request({
@@ -476,6 +496,7 @@ export const TransactionsProvider = ({ children }) => {
      }
    } catch (error) {
      setTokenTxn(false);
+     alert(error.message)
      console.log(error.message);
      throw new Error("Transaction failed");
    }
