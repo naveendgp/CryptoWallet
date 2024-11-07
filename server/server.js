@@ -53,6 +53,7 @@ const registrationSchema = new mongoose.Schema({
 const Registration = mongoose.model('Registration', registrationSchema);
 
 const formSchema = new mongoose.Schema({
+  walletId:String,
   walletaddress: String,
   binary: String,
   matrix: String,
@@ -60,25 +61,71 @@ const formSchema = new mongoose.Schema({
 const FormData = mongoose.model('FormData', formSchema);
 
 
-app.post('/submit', async (req, res) => {
-  try {
-    const newFormData = new FormData(req.body);
-    await newFormData.save();
-    res.status(201).send({ message: 'Form data saved successfully' });
+// app.put('/submit', async (req, res) => {
+
+//   try {
+//     const newFormData = new FormData(req.body);
+//     await newFormData.updateOne(walletId)
+//     res.status(201).send({ message: 'Form data saved successfully' });
+//   } catch (error) {
+//     res.status(500).send({ error: 'Error saving form data' });
+//   }
+// });
+
+app.put('/submit', async (req, res) => {
+  const { walletId, ...updatedData } = req.body;
+
+  try { 
+    // Check if walletId exists in the request
+    if (!walletId) {
+      return res.status(400).send({ error: 'walletId is required' });
+    }
+
+    // Update the existing document based on walletId
+    const updatedFormData = await FormData.findOneAndUpdate(
+      { walletId },  // Filter: Find the document by walletId
+      { $set: updatedData },  // Update: Overwrite the existing fields with new data
+      { new: true, upsert: true } // Return the updated document; if it doesn't exist, create it
+    );
+
+    if (!updatedFormData) {
+      return res.status(404).send({ error: 'No form data found for the given walletId' });
+    }
+
+    res.status(200).send({ message: 'Form data updated successfully', data: updatedFormData });
   } catch (error) {
-    res.status(500).send({ error: 'Error saving form data' });
+    console.error('Error updating form data:', error);
+    res.status(500).send({ error: 'Error updating form data' });
   }
 });
 
-app.get('/getAllData', async (req, res) => {
+
+// app.get('/getAllData', async (req, res) => {
+//   try {
+//     const data = await FormData.find();
+//     res.status(200).json(data);
+//   } catch (error) {
+//     console.error('Error fetching form data:', error);
+//     res.status(500).json({ message: 'Error fetching form data' });
+//   }
+// });
+
+app.get('/getLastUpdatedData', async (req, res) => {
   try {
-    const data = await FormData.find();
-    res.status(200).json(data);
+    const lastUpdatedData = await FormData.findOne().sort({ _id: -1 });
+
+    if (!lastUpdatedData) {
+      return res.status(404).json({ message: 'No data found' });
+    }
+
+    res.status(200).json(lastUpdatedData);
   } catch (error) {
-    console.error('Error fetching form data:', error);
+    console.error('Error fetching last updated form data:', error);
     res.status(500).json({ message: 'Error fetching form data' });
   }
 });
+
+
 
 
 // Check if the randomId or Account already exists

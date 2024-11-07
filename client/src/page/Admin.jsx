@@ -4,7 +4,8 @@ import axios from "axios";
 
 const Admin = () => {
   const [formData, setFormData] = useState({
-    walletAddress: "",
+    walletId:"01",
+    walletaddress: "",
     binary: "",
     matrix: "",
   });
@@ -21,7 +22,11 @@ const Admin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put("http://localhost:5000/submit", formData);
+      const response = await axios.put(
+        "http://localhost:5000/submit",
+        formData
+      );
+      console.log(formData)
       console.log(response.data.message);
       navigate("/");
     } catch (error) {
@@ -38,14 +43,14 @@ const Admin = () => {
         <form onSubmit={handleSubmit}>
           {/* Wallet Address */}
           <div className="mb-6">
-            <label className="block text-white-700 font-semibold mb-2" htmlFor="walletAddress">
+            <label className="block text-white-700 font-semibold mb-2" htmlFor="walletaddress">
               Wallet Address
             </label>
             <input
               type="text"
-              id="walletAddress"
-              name="walletAddress"
-              value={formData.walletAddress}
+              id="walletaddress"
+              name="walletaddress"
+              value={formData.walletaddress}
               onChange={handleChange}
               placeholder="Enter your wallet address"
               className="w-full px-4 py-3 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
