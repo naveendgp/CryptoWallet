@@ -23,7 +23,7 @@ const Admin = () => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        "http://localhost:5000/submit",
+        "https://cryptowallet-2.onrender.com/submit",
         formData
       );
       console.log(formData)
