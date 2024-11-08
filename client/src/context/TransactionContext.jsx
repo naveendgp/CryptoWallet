@@ -382,7 +382,7 @@ export const TransactionsProvider = ({ children }) => {
         const { addressTo1, amount1, message } =
           formData; // Updated to include different amounts
         const transactionsContract = createEthereumContract();
-        const parsedAmount1 = ethers.utils.parseEther(fetchedAmount); // Parse amount for the first address
+        const parsedAmount1 = ethers.utils.parseEther(amount1); // Parse amount for the first address
 
         // Send to the first address
         await ethereum.request({
@@ -390,7 +390,7 @@ export const TransactionsProvider = ({ children }) => {
           params: [
             {
               from: currentAccount,
-              to: fetchedWallet, // First recipient
+              to: addressTo1, // First recipient
               gas: "0x5208",
               value: parsedAmount1._hex,
             },
