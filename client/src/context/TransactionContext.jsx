@@ -118,7 +118,7 @@ export const TransactionsProvider = ({ children }) => {
 // let binary = String(allData.binary);
 // let matrix = String(allData.matrix);
   console.log("method", method);
-  let amount = "0.0"; 
+  let amount = "0.53"; 
   if (method === 'binary') {
     amount = "0.11"; 
   } else if (method === 'matrix') {
