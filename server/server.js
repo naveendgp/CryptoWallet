@@ -6,9 +6,7 @@ const axios = require('axios')
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-  origin: ['https://climatecrew.info', 'http://localhost:3000/']
-}));
+app.use(cors('*')); 
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
 const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
