@@ -5,14 +5,24 @@ const Razorpay = require('razorpay')
 const axios = require('axios')
 const app = express();
 
-app.use(express.json());
 
 app.use(cors({
   origin: '*',  // Allow requests from any origin
   methods: 'GET,POST,PUT,DELETE',  // Allow these methods
   allowedHeaders: 'Content-Type,Authorization',  // Allow these headers
 }));
-app.options('*', cors());  // Handle preflight requests
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // Change '*' to a specific domain if needed
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
+
+
+app.options('*', cors());
+
+app.use(express.json());
 
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
