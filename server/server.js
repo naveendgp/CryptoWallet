@@ -7,10 +7,10 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-  origin: '*',  // Allow all domains
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow all HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
-  credentials: false  // Disable cookies if not needed
+  origin: 'https://climatecrew.info', // Allow this origin only
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
+  credentials: true // If cookies or credentials are needed
 }));
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
