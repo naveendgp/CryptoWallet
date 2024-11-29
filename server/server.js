@@ -6,7 +6,12 @@ const axios = require('axios')
 const app = express();
 
 app.use(express.json());
-app.use(cors());  
+app.use(cors({
+  origin: '*',  // Allow all domains
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  // Allow all HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'],  // Allow specific headers
+  credentials: false  // Disable cookies if not needed
+}));
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
 const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
