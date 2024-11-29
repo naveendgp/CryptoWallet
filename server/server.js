@@ -12,6 +12,8 @@ app.use(cors({
   methods: 'GET,POST,PUT,DELETE',  // Allow these methods
   allowedHeaders: 'Content-Type,Authorization',  // Allow these headers
 }));
+app.options('*', cors());  // Handle preflight requests
+
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
 const RAZORPAY_SECRET = "4Qfo9bY0gtGlmA6biAtaNOtD"
