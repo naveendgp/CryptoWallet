@@ -6,8 +6,11 @@ const axios = require('axios')
 const app = express();
 
 app.use(express.json());
+
 app.use(cors({
-  origin: '*',  // Allows requests from any origin
+  origin: '*',  // Allow requests from any origin
+  methods: 'GET,POST,PUT,DELETE',  // Allow these methods
+  allowedHeaders: 'Content-Type,Authorization',  // Allow these headers
 }));
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
