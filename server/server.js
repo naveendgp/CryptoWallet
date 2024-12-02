@@ -158,35 +158,50 @@ app.get('/getLastUpdatedData', async (req, res) => {
 
 
 // Check if the randomId or Account already exists
-app.post("/api/check-random-id", async (req, res) => {
-  const { randomId, Account } = req.body;
+app.post('/submit', async (req, res) => {
+  const { walletaddress, binary, matrix } = req.body;
+
+  // Log the incoming data to verify it's correctly received
+  console.log('Received data:', req.body);
 
   try {
-    // Check if randomId or account exists
-    const existingRecord = await Registration.findOne({
-      $or: [{ randomId }, { account: Account }]
+    // Check if walletAddress exists in the request
+    if (!walletaddress) {
+      return res.status(400).send({ error: 'walletAddress is required' });
+    }
+
+    // Check if required fields are present
+    if (binary === undefined || matrix === undefined) {
+      return res.status(400).send({ error: 'binary and matrix are required' });
+    }
+
+    // Step 1: Delete all existing data associated with the walletAddress
+    const deleteResult = await FormData.deleteMany({ walletaddress });
+
+    // If no documents were deleted, log this
+    if (deleteResult.deletedCount === 0) {
+      console.log(`No data found for walletAddress: ${walletaddress}`);
+    }
+
+    // Step 2: Insert new data
+    const newFormData = new FormData({
+      walletaddress,
+      binary,
+      matrix,
     });
 
-    if (existingRecord) {
-      res.json({
-        exists: true,
-        randomId: existingRecord.randomId,
-        TokenTxn: existingRecord.TokenTxn,
-        message: 'ID or account already exists.'
-      });
-    } else {
-      res.json({
-        exists: false,
-        randomId,
-        TokenTxn: false, 
-        message: 'ID or account does not exist.'
-      });
-    }
+    const savedFormData = await newFormData.save(); // Save the new data
+
+    res.status(200).send({
+      message: 'Data deleted and new data inserted successfully',
+      data: savedFormData,
+    });
   } catch (error) {
-    console.error("Error checking random ID:", error);
-    res.status(500).json({ success: false, message: "Error checking random ID." });
+    console.error('Error handling form data:', error);
+    res.status(500).send({ error: 'Error handling form data' });
   }
 });
+
 
 function generateRandomId(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'; // Letters only
