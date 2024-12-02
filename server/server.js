@@ -50,7 +50,7 @@ mongoose.connect(uri)
 const randomIdSchema = new mongoose.Schema({
   randomId: { type: String, unique: true, required: true },
   // reference_id: { type: String, unique: true, required: true },
-  account: { type: String, unique: true, required: true },  // Make account unique
+  account: { type: String, required: true },  // Make account unique
   contact_id: { type: String  },
   // funt_account_id: { type: String, unique: true },
   // payout_id: { type: String, unique: true },
