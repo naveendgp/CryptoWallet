@@ -78,10 +78,10 @@ const registrationSchema = new mongoose.Schema({
 const Registration = mongoose.model('Registration', registrationSchema);
 
 const formSchema = new mongoose.Schema({
-  walletId:String,
-  walletaddress: String,
-  binary: String,
-  matrix: String,
+  walletId: { type: String, required: true },  // walletId as a required field
+  walletaddress: { type: String, required: true },  // walletaddress as required
+  binary: { type: Number, required: true },
+  matrix: { type: Number, required: true }
 });
 const FormData = mongoose.model('FormData', formSchema);
 
