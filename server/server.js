@@ -72,7 +72,7 @@ const registrationSchema = new mongoose.Schema({
   // linkedMobileNumber: { type: String, required: true },
   Referalid: { type: String, required: true },
   randomId: { type: String, unique: true, required: true },
-  address: { type: String, unique: true, required: true },  // Make account unique
+  address: { type: String,  required: true },  // Make account unique
   TokenTxn: { type: Boolean, default: false },
 });
 
