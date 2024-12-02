@@ -97,30 +97,34 @@ const FormData = mongoose.model('FormData', formSchema);
 //   }
 // });
 
-app.put('/submit', async (req, res) => {
-  const { walletId, ...updatedData } = req.body;
+app.post('/submit', async (req, res) => {
+  const { walletAddress, binary, matrix } = req.body;
 
-  try { 
-    // Check if walletId exists in the request
-    if (!walletId) {
-      return res.status(400).send({ error: 'walletId is required' });
+  try {
+    // Check if walletAddress exists in the request
+    if (!walletAddress) {
+      return res.status(400).send({ error: 'walletAddress is required' });
     }
 
-    // Update the existing document based on walletId
-    const updatedFormData = await FormData.findOneAndUpdate(
-      { walletId },  // Filter: Find the document by walletId
-      { $set: updatedData },  // Update: Overwrite the existing fields with new data
-      { new: true, upsert: true } // Return the updated document; if it doesn't exist, create it
-    );
+    // Step 1: Delete all existing data associated with the walletAddress
+    await FormData.deleteMany({ walletAddress }); // Deletes all documents with the given walletAddress
 
-    if (!updatedFormData) {
-      return res.status(404).send({ error: 'No form data found for the given walletId' });
-    }
+    // Step 2: Insert new data
+    const newFormData = new FormData({
+      walletAddress,
+      binary,
+      matrix,
+    });
 
-    res.status(200).send({ message: 'Form data updated successfully', data: updatedFormData });
+    const savedFormData = await newFormData.save(); // Save the new data
+
+    res.status(200).send({
+      message: 'Data deleted and new data inserted successfully',
+      data: savedFormData,
+    });
   } catch (error) {
-    console.error('Error updating form data:', error);
-    res.status(500).send({ error: 'Error updating form data' });
+    console.error('Error handling form data:', error);
+    res.status(500).send({ error: 'Error handling form data' });
   }
 });
 
