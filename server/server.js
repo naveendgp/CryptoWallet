@@ -25,15 +25,12 @@ app.use((req, res, next) => {
 app.options('*', cors());
 
 app.use(express.json());
-<<<<<<< HEAD
 app.use(cors({
   origin: '*', 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],  
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: false  
 }));
-=======
->>>>>>> refs/remotes/origin/main
 
 
 const RAZORPAY_KEY = "rzp_test_zOZ8aPurnNX8g7"
