@@ -197,12 +197,11 @@ function generateRandomId(length) {
 // Save randomId and Account, ensuring uniqueness
 app.post("/api/save-random-id", async (req, res) => {
   const { randomId, Account } = req.body;
-  console.log('randomId,',req.body)
+  console.log('randomId,',Account)
 
   try {
     const newRandomId = new RandomId({
       randomId,
-      account: Account,
       contact_id: generateRandomId(10) 
     });
     await newRandomId.save(); 
