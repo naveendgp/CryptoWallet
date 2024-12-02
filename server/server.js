@@ -413,7 +413,6 @@ app.post('/api/register', async (req, res) => {
 
     if (existingUser) {
       let conflictMessage = 'Registration conflict: ';
-      if (existingUser.mobileNumber === mobileNumber) conflictMessage += 'Mobile Number already exists! ';
       if (existingUser.address === address) conflictMessage += 'Address already exists!';
 
       return res.status(400).json({ message: conflictMessage.trim() });
