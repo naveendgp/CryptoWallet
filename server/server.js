@@ -473,8 +473,8 @@ app.get("/api/dashboard", async (req, res) => {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'jeyachandran72jj@gmail.com',
-    pass: 'gdjh zmqn wrsa daue',
+    user: 'climatecrew.info@gmail.com',
+    pass: 'ezkp yqhy iyjy ugbr',
   },
 });
 
