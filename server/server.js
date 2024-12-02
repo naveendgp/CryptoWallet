@@ -158,38 +158,31 @@ app.post("/api/check-random-id", async (req, res) => {
   const { randomId, Account } = req.body;
 
   try {
-    // Check for existing record by randomId or Account
+    // Check if randomId or account exists
     const existingRecord = await Registration.findOne({
       $or: [{ randomId }, { account: Account }]
     });
 
     if (existingRecord) {
-      const conflict = [];
-      if (existingRecord.randomId === randomId) conflict.push("randomId");
-      if (existingRecord.account === Account) conflict.push("account");
-
       res.json({
         exists: true,
         randomId: existingRecord.randomId,
-        account: existingRecord.account,
         TokenTxn: existingRecord.TokenTxn,
-        message: `${conflict.join(" and ")} already exists.`,
+        message: 'ID or account already exists.'
       });
     } else {
       res.json({
         exists: false,
         randomId,
-        account: Account,
-        TokenTxn: false,
-        message: 'ID and account do not exist.',
+        TokenTxn: false, 
+        message: 'ID or account does not exist.'
       });
     }
   } catch (error) {
-    console.error("Error checking random ID or account:", error);
-    res.status(500).json({ success: false, message: "Error checking random ID or account." });
+    console.error("Error checking random ID:", error);
+    res.status(500).json({ success: false, message: "Error checking random ID." });
   }
 });
-
 
 function generateRandomId(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'; // Letters only
@@ -410,13 +403,20 @@ app.get("/api/getDetails", async (req, res) => {
 
 //save the user Details
 app.post('/api/register', async (req, res) => {
-  const { name, email, mobileNumber, paymentMethod, Referalid, randomId,address } = req.body;
+  const { name, email, mobileNumber, paymentMethod, Referalid, randomId, address } = req.body;
 
   try {
-    // Check if the mobile number already exists
-    const existingUser = await Registration.findOne({ mobileNumber });
+    // Check if either the mobile number or address already exists
+    const existingUser = await Registration.findOne({
+      $or: [{ mobileNumber }, { address }]
+    });
+
     if (existingUser) {
-      return res.status(400).json({ message: 'Linked Mobile Number already exists!' });
+      let conflictMessage = 'Registration conflict: ';
+      if (existingUser.mobileNumber === mobileNumber) conflictMessage += 'Mobile Number already exists! ';
+      if (existingUser.address === address) conflictMessage += 'Address already exists!';
+
+      return res.status(400).json({ message: conflictMessage.trim() });
     }
 
     // Create new registration entry
@@ -438,6 +438,7 @@ app.post('/api/register', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 
