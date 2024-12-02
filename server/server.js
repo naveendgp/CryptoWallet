@@ -69,7 +69,7 @@ const registrationSchema = new mongoose.Schema({
   // linkedMobileNumber: { type: String, required: true },
   Referalid: { type: String, required: true },
   randomId: { type: String, unique: true, required: true },
-  address: { type: String,  required: true },  // Make account unique
+  address: { type: String,  required: true },  
   TokenTxn: { type: Boolean, default: false },
 });
 
@@ -158,31 +158,38 @@ app.post("/api/check-random-id", async (req, res) => {
   const { randomId, Account } = req.body;
 
   try {
-    // Check if randomId or account exists
+    // Check for existing record by randomId or Account
     const existingRecord = await Registration.findOne({
       $or: [{ randomId }, { account: Account }]
     });
 
     if (existingRecord) {
+      const conflict = [];
+      if (existingRecord.randomId === randomId) conflict.push("randomId");
+      if (existingRecord.account === Account) conflict.push("account");
+
       res.json({
         exists: true,
         randomId: existingRecord.randomId,
+        account: existingRecord.account,
         TokenTxn: existingRecord.TokenTxn,
-        message: 'ID or account already exists.'
+        message: `${conflict.join(" and ")} already exists.`,
       });
     } else {
       res.json({
         exists: false,
         randomId,
-        TokenTxn: false, 
-        message: 'ID or account does not exist.'
+        account: Account,
+        TokenTxn: false,
+        message: 'ID and account do not exist.',
       });
     }
   } catch (error) {
-    console.error("Error checking random ID:", error);
-    res.status(500).json({ success: false, message: "Error checking random ID." });
+    console.error("Error checking random ID or account:", error);
+    res.status(500).json({ success: false, message: "Error checking random ID or account." });
   }
 });
+
 
 function generateRandomId(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'; // Letters only
@@ -197,11 +204,12 @@ function generateRandomId(length) {
 // Save randomId and Account, ensuring uniqueness
 app.post("/api/save-random-id", async (req, res) => {
   const { randomId, Account } = req.body;
-  console.log('randomId,',Account)
+  console.log('randomId,',req.body)
 
   try {
     const newRandomId = new RandomId({
       randomId,
+      account: Account,
       contact_id: generateRandomId(10) 
     });
     await newRandomId.save(); 
